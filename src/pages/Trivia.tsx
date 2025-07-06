@@ -1,16 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Music,
-  Share2,
-  RotateCcw,
-  Trophy,
-  ChevronDown,
-  User,
-} from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Music, Share2, RotateCcw, Trophy } from "lucide-react";
 import { RetroGrid } from "@/components/ui/retro-grid";
 
 const Trivia = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [_, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<
     Record<number, number>
@@ -74,7 +67,7 @@ const Trivia = () => {
     },
   ];
 
-  const getSnarkyComment = (percentage) => {
+  const getSnarkyComment = (percentage: any) => {
     if (percentage === 100)
       return "Perfect score! You're basically a walking music encyclopedia.";
     if (percentage >= 87.5)
@@ -116,18 +109,18 @@ const Trivia = () => {
     }
   }, [showWelcome, isComplete]);
 
-  const handleAnswerSelect = (questionIndex, answerIndex) => {
+  const handleAnswerSelect = (questionIndex: any, answerIndex: any) => {
     setSelectedAnswers((prev) => ({
       ...prev,
       [questionIndex]: answerIndex,
     }));
   };
 
-  const handleStartQuiz = () => {
-    if (userName.trim()) {
-      setShowWelcome(false);
-    }
-  };
+  // const handleStartQuiz = () => {
+  //   if (userName.trim()) {
+  //     setShowWelcome(false);
+  //   }
+  // };
 
   const handleSubmit = () => {
     let finalScore = 0;

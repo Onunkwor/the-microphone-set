@@ -1,37 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Book, Headphones, Play, Mic, Music } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
-  const featuredPlaylists = [
-    {
-      id: 1,
-      title: "Summer Vibes 2025",
-      description: "The perfect playlist for sunny days and warm nights",
-      platform: "Spotify",
-      image:
-        "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=3270&auto=format&fit=crop",
-    },
-    {
-      id: 2,
-      title: "Indie Discoveries",
-      description: "Fresh indie tracks from emerging artists around the globe",
-      platform: "Apple Music",
-      image:
-        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=3270&auto=format&fit=crop",
-    },
-    {
-      id: 3,
-      title: "Hip-Hop Essentials",
-      description: "Classic and contemporary hip-hop tracks you need to hear",
-      platform: "Spotify",
-      image:
-        "https://images.unsplash.com/photo-1485579149621-3123dd979885?q=80&w=3131&auto=format&fit=crop",
-    },
-  ];
-  const playlistId = "64LkgCfNbLqjclQYCTid8L";
+  // const featuredPlaylists = [
+  //   {
+  //     id: 1,
+  //     title: "Summer Vibes 2025",
+  //     description: "The perfect playlist for sunny days and warm nights",
+  //     platform: "Spotify",
+  //     image:
+  //       "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=3270&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Indie Discoveries",
+  //     description: "Fresh indie tracks from emerging artists around the globe",
+  //     platform: "Apple Music",
+  //     image:
+  //       "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=3270&auto=format&fit=crop",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Hip-Hop Essentials",
+  //     description: "Classic and contemporary hip-hop tracks you need to hear",
+  //     platform: "Spotify",
+  //     image:
+  //       "https://images.unsplash.com/photo-1485579149621-3123dd979885?q=80&w=3131&auto=format&fit=crop",
+  //   },
+  // ];
+  // const playlistId = "64LkgCfNbLqjclQYCTid8L";
 
   return (
     <>

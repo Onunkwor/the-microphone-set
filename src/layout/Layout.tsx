@@ -61,7 +61,7 @@ const Layout = () => {
           <NavBody className="cursor-pointer">
             <Link to="/" className="flex items-center mb-4 md:mb-0 z-70">
               <div className="font-sans text-xl md:text-2xl flex items-center">
-                <span className="font-light tracking-tight">the</span>
+                <span className="font-light tracking-tight">The</span>
                 <span className="mx-1 font-black tracking-tighter">
                   MICROPHONE
                 </span>
