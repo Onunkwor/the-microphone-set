@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
 export const ImagesSlider = ({
@@ -25,96 +25,75 @@ export const ImagesSlider = ({
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex + 1 === images.length ? 0 : prevIndex + 1
-    );
+    setCurrentIndex((prev) => (prev + 1 === images.length ? 0 : prev + 1));
   };
-
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex - 1 < 0 ? images.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prev) => (prev - 1 < 0 ? images.length - 1 : prev - 1));
   };
 
+  // preload once
   useEffect(() => {
-    loadImages();
-  }, []);
-
-  const loadImages = () => {
     setLoading(true);
-    const loadPromises = images.map((image) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = image;
-        img.onload = () => resolve(image);
-        img.onerror = reject;
-      });
-    });
-
-    Promise.all(loadPromises)
-      .then((loadedImages) => {
-        setLoadedImages(loadedImages as string[]);
+    Promise.all(
+      images.map(
+        (src) =>
+          new Promise<string>((res, rej) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => res(src);
+            img.onerror = rej;
+          })
+      )
+    )
+      .then((imgs) => {
+        setLoadedImages(imgs);
         setLoading(false);
       })
-      .catch((error) => console.error("Failed to load images", error));
-  };
+      .catch((e) => {
+        console.error("Failed to load images", e);
+        setLoading(false);
+      });
+  }, [images]);
+
+  // keyboard nav + autoplay
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowRight") {
-        handleNext();
-      } else if (event.key === "ArrowLeft") {
-        handlePrevious();
-      }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") handlePrevious();
     };
+    window.addEventListener("keydown", onKey);
 
-    window.addEventListener("keydown", handleKeyDown);
-
-    // autoplay
-    let interval: any;
-    if (autoplay) {
-      interval = setInterval(() => {
-        handleNext();
-      }, 5000);
-    }
+    let interval: NodeJS.Timeout;
+    if (autoplay) interval = setInterval(handleNext, 5000);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keydown", onKey);
       clearInterval(interval);
     };
-  }, []);
+  }, [autoplay, images.length]);
 
-  const slideVariants = {
-    initial: {
-      scale: 0,
-      opacity: 0,
-      rotateX: 45,
-    },
+  // ← HERE we import Variants and annotate:
+  const slideVariants: Variants = {
+    initial: { scale: 0, opacity: 0, rotateX: 45 },
     visible: {
       scale: 1,
       rotateX: 0,
       opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: [0.645, 0.045, 0.355, 1.0],
-      },
+      transition: { duration: 0.5, ease: [0.645, 0.045, 0.355, 1.0] },
     },
     upExit: {
       opacity: 1,
       y: "-150%",
-      transition: {
-        duration: loading ? 1 : 1,
-      },
+      transition: { duration: loading ? 1 : 1 },
     },
     downExit: {
       opacity: 1,
       y: "150%",
-      transition: {
-        duration: 1,
-      },
+      transition: { duration: 1 },
     },
   };
 
-  const areImagesLoaded = loadedImages.length > 0;
+  if (loadedImages.length === 0) return null;
 
   return (
     <div
@@ -122,28 +101,24 @@ export const ImagesSlider = ({
         "overflow-hidden h-full w-full relative flex items-center justify-center",
         className
       )}
-      style={{
-        perspective: "1000px",
-      }}
+      style={{ perspective: "1000px" }}
     >
-      {areImagesLoaded && children}
-      {areImagesLoaded && overlay && (
-        <div className={cn("absolute inset-0  z-40", overlayClassName)} />
+      {children}
+      {overlay && (
+        <div className={cn("absolute inset-0 z-40", overlayClassName)} />
       )}
 
-      {areImagesLoaded && (
-        <AnimatePresence>
-          <motion.img
-            key={currentIndex}
-            src={loadedImages[currentIndex]}
-            initial="initial"
-            animate="visible"
-            exit={direction === "up" ? "upExit" : "downExit"}
-            variants={slideVariants}
-            className="image h-full w-full absolute inset-0 object-cover object-center"
-          />
-        </AnimatePresence>
-      )}
+      <AnimatePresence initial={false}>
+        <motion.img
+          key={currentIndex}
+          src={loadedImages[currentIndex]}
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          initial="initial"
+          animate="visible"
+          exit={direction === "up" ? "upExit" : "downExit"}
+          variants={slideVariants}
+        />
+      </AnimatePresence>
     </div>
   );
 };
