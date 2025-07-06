@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { TextReveal } from "@/components/ui/text-reveal";
 import { cn } from "@/lib/utils";
 import { Book, Headphones, Play, Mic, Music } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Home = () => {
   // const featuredPlaylists = [
   //   {
@@ -199,6 +199,8 @@ const Home = () => {
     }
   `}</style>
       </section>
+
+      <TextReveal>"oh you love music too?"</TextReveal>
 
       {/* Featured Playlists */}
       <section className="py-16 px-6 md:px-12 bg-white">
