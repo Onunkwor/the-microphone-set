@@ -35,7 +35,7 @@ const Home = () => {
 
   return (
     <>
-      <section className="relative overflow-hidden py-24 px-6 md:px-12 bg-gradient-to-b from-white to-gray-50">
+      <section className="relative overflow-hidden py-10 lg:py-24 px-6 md:px-12 bg-gradient-to-b from-white to-gray-50">
         {/* Enhanced abstract decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 rounded-full border-8 border-black"></div>
