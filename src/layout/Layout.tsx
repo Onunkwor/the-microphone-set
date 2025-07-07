@@ -43,14 +43,13 @@ const Layout = () => {
       {location.pathname === "/" && (
         <StickyBanner className="bg-gradient-to-b from-blue-500 to-blue-600">
           <p className="mx-0 max-w-[90%] text-white drop-shadow-md">
-            🎤 Think you know your lyrics? Prove it in our new{" "}
-            <strong>Guess the Lyrics </strong>
-            trivia challenge!{" "}
+            🎤 Think you know lyrics? Prove it in our{" "}
+            <strong>Trivia Challenge</strong> —{" "}
             <a
               href="/trivia"
               className="transition duration-200 hover:underline"
             >
-              Start now
+              Play now
             </a>
           </p>
         </StickyBanner>
