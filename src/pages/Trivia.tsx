@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Music, Share2, RotateCcw, Trophy } from "lucide-react";
+import { Music, Share2, RotateCcw, Trophy, Copy, Facebook } from "lucide-react";
 import { RetroGrid } from "@/components/ui/retro-grid";
+import { Button } from "@/components/ui/button";
 
 const Trivia = () => {
   const [_, setCurrentQuestion] = useState(0);
@@ -149,8 +150,22 @@ const Trivia = () => {
     const text = `I just scored ${score}/${questions.length} (${percentage}%) on The Microphone Set's Music Trivia! 🎵 Think you can beat me?`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       text
+    )}&url=${encodeURIComponent(window.location.origin + "/trivia")}`;
+    window.open(url, "_blank");
+  };
+
+  const shareOnFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+      window.location.origin + "/trivia"
     )}`;
     window.open(url, "_blank");
+  };
+
+  const copyToClipboard = () => {
+    const percentage = Math.round((score / questions.length) * 100);
+    const text = `I just scored ${score}/${questions.length} (${percentage}%) on The Microphone Set's Music Trivia! Can you beat me? ${window.location.origin}/trivia`;
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
   };
 
   const percentage = Math.round((score / questions.length) * 100);
@@ -250,22 +265,40 @@ const Trivia = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={shareOnTwitter}
-                  className="flex-1 bg-blue-500 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <Share2 className="w-5 h-5" />
-                  Share on Twitter
-                </button>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <Button
+                    onClick={shareOnTwitter}
+                    className="bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Twitter
+                  </Button>
+                  <Button
+                    onClick={shareOnFacebook}
+                    className="bg-[#4267B2] hover:bg-[#365899] text-white"
+                  >
+                    <Facebook className="w-4 h-4 mr-2" />
+                    Facebook
+                  </Button>
+                  <Button
+                    onClick={copyToClipboard}
+                    variant="outline"
+                    className="border-2"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Link
+                  </Button>
+                </div>
 
-                <button
+                <Button
                   onClick={resetQuiz}
-                  className="flex-1 bg-gray-100 text-black py-3 px-6 rounded-md font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                  className="w-full gradient-bg-ocean text-white hover:opacity-90"
+                  size="lg"
                 >
-                  <RotateCcw className="w-5 h-5" />
+                  <RotateCcw className="w-5 h-5 mr-2" />
                   Try Again
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -278,15 +311,35 @@ const Trivia = () => {
 
   // Quiz Screen
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-2xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-black mb-2">
-            Music Trivia Challenge
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+      <div className="max-w-2xl mx-auto px-6 py-12">
+        <div className="mb-12 text-center">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white rounded-full px-4 py-2 mb-6">
+            <Music className="w-5 h-5" />
+            <span className="text-sm font-medium">Test Your Knowledge</span>
+          </div>
+          <h2 className="text-4xl font-bold text-black mb-3">
+            Music Trivia <span className="gradient-ocean-text">Challenge</span>
           </h2>
-          <p className="text-gray-600">
-            Test your music knowledge with these questions
+          <p className="text-lg text-gray-600">
+            Answer all {questions.length} questions to see your score
           </p>
+          <div className="mt-6">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+              <span className="font-semibold">Progress:</span>
+              <span>
+                {answeredCount}/{questions.length} answered
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-2 max-w-md mx-auto">
+              <div
+                className="h-2 bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] rounded-full transition-all duration-300"
+                style={{
+                  width: `${(answeredCount / questions.length) * 100}%`,
+                }}
+              ></div>
+            </div>
+          </div>
         </div>
 
         {/* Questions */}
@@ -299,16 +352,23 @@ const Trivia = () => {
               }}
               className={`transition-all duration-500 ${
                 visibleQuestion === questionIndex
-                  ? "opacity-100"
-                  : "opacity-30 blur-sm"
+                  ? "opacity-100 scale-100"
+                  : "opacity-30 blur-sm scale-95"
               }`}
             >
-              <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-lg hover-lift">
                 <div className="mb-6">
-                  <div className="text-sm text-gray-500 mb-2">
-                    Question {questionIndex + 1} of {questions.length}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold text-[#3b82f6] bg-blue-50 px-3 py-1 rounded-full">
+                      Question {questionIndex + 1} of {questions.length}
+                    </span>
+                    {selectedAnswers[questionIndex] !== undefined && (
+                      <span className="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                        ✓ Answered
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-xl font-semibold text-black">
+                  <h3 className="text-xl font-bold text-black">
                     {question.question}
                   </h3>
                 </div>
@@ -317,7 +377,11 @@ const Trivia = () => {
                   {question.options.map((option, optionIndex) => (
                     <label
                       key={optionIndex}
-                      className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                        selectedAnswers[questionIndex] === optionIndex
+                          ? "border-[#3b82f6] bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
                     >
                       <input
                         type="radio"
@@ -327,9 +391,9 @@ const Trivia = () => {
                         onChange={() =>
                           handleAnswerSelect(questionIndex, optionIndex)
                         }
-                        className="mr-4 w-4 h-4 text-black focus:ring-black"
+                        className="mr-4 w-5 h-5 text-[#3b82f6] focus:ring-[#3b82f6]"
                       />
-                      <span className="text-gray-700">{option}</span>
+                      <span className="text-gray-900 font-medium">{option}</span>
                     </label>
                   ))}
                 </div>

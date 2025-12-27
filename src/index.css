@@ -84,6 +84,21 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Music-inspired brand colors */
+  --electric-blue: #3b82f6;
+  --electric-blue-dark: #2563eb;
+  --electric-blue-light: #60a5fa;
+  --vibrant-purple: #8b5cf6;
+  --hot-pink: #ec4899;
+  --neon-orange: #f97316;
+  --lime-green: #84cc16;
+  --cyber-yellow: #fbbf24;
+
+  /* Gradient backgrounds */
+  --gradient-sunset: linear-gradient(135deg, #f97316 0%, #ec4899 50%, #8b5cf6 100%);
+  --gradient-ocean: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --gradient-fire: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ec4899 100%);
 }
 
 .dark {
@@ -124,7 +139,53 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-sunset);
+  }
+
+  .gradient-ocean-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-ocean);
+  }
+
+  .gradient-bg-sunset {
+    background-image: var(--gradient-sunset);
+  }
+
+  .gradient-bg-ocean {
+    background-image: var(--gradient-ocean);
+  }
+
+  .gradient-bg-fire {
+    background-image: var(--gradient-fire);
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
   }
 }

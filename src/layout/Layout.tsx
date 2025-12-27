@@ -9,33 +9,33 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
 import { StickyBanner } from "@/components/ui/sticky-banner";
+import { Footer } from "@/components/ui/footer";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  console.log(location);
 
   const navItems = [
     {
       name: "Playlists",
-      link: "#features",
+      link: "/playlists",
     },
     {
-      name: "Blogs",
-      link: "#pricing",
+      name: "Blog",
+      link: "/blog",
     },
     {
       name: "Interviews",
-      link: "#contact",
+      link: "/interviews",
     },
     {
       name: "Recommendations",
-      link: "#contact",
+      link: "/recommendations",
     },
     {
       name: "Contact",
-      link: "#contact",
+      link: "/contact",
     },
   ];
   return (
@@ -95,20 +95,21 @@ const Layout = () => {
               onClose={() => setIsMobileMenuOpen(false)}
             >
               {navItems.map((item, idx) => (
-                <a
+                <Link
                   key={`mobile-link-${idx}`}
-                  href={item.link}
+                  to={item.link}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="relative text-neutral-600 dark:text-neutral-300"
                 >
                   <span className="block">{item.name}</span>
-                </a>
+                </Link>
               ))}
             </MobileNavMenu>
           </MobileNav>
         </Navbar>
       </div>
       <Outlet />
+      <Footer />
     </>
   );
 };
