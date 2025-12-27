@@ -1,4 +1,4 @@
-import { Music, Instagram, Twitter, Youtube, Mail } from "lucide-react";
+import {  Instagram, Twitter, Youtube, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const Footer = () => {

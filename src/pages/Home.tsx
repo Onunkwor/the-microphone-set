@@ -274,7 +274,7 @@ const Home = () => {
       link: "/live",
       number: "04",
     },
-  ].map((feature, index) => (
+  ].map((feature) => (
     <Link
       key={feature.title}
       to={feature.link}
@@ -368,7 +368,7 @@ const Home = () => {
                 tracks: "32 tracks",
                 duration: "2hr 15min",
               },
-            ].map((playlist, index) => (
+            ].map((playlist) => (
               <div
                 key={playlist.id}
                 className="group relative rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500"
