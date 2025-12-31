@@ -1,6 +1,6 @@
+import ArtistShowcase from "@/components/ui/artistShowcase";
 import { BoxReveal } from "@/components/ui/box-reveal";
 import { Button } from "@/components/ui/button";
-import { TextReveal } from "@/components/ui/text-reveal";
 import {
   Book,
   Headphones,
@@ -208,8 +208,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Text Reveal Quote */}
-        <TextReveal>"oh you love music too?"</TextReveal>
+      {/* Artist Showcase - Replaces TextReveal */}
+      <ArtistShowcase />
 
       {/* Features Section */}
       <section className="py-20 px-6 md:px-12 relative bg-gradient-to-b from-gray-50 to-white">
@@ -282,7 +282,7 @@ const Home = () => {
     >
       <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 md:gap-6">
         {/* Number - hidden on mobile, shown on sm+ */}
-        <span className="hidden sm:block text-4xl md:text-5xl font-bold text-gray-100 group-hover:text-[#3b82f6]/20 transition-colors duration-500">
+        <span className="hidden sm:block text-4xl md:text-5xl font-bold text-gray-400 group-hover:text-[#3b82f6]/20 transition-colors duration-500">
           {feature.number}
         </span>
 

@@ -1,6 +1,6 @@
-import { Sparkles, TrendingUp, Heart, Music2 } from "lucide-react";
+import { Sparkles, TrendingUp, Heart, Music, ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 const Recommendations = () => {
   const weeklyPicks = [
@@ -43,64 +43,73 @@ const Recommendations = () => {
   ];
 
   const genres = [
-    {
-      name: "Electronic",
-      icon: "🎹",
-      color: "from-purple-500 to-pink-500",
-      count: 234,
-    },
-    { name: "Hip-Hop", icon: "🎤", color: "from-orange-500 to-red-500", count: 189 },
-    { name: "Indie", icon: "🎸", color: "from-blue-500 to-cyan-500", count: 156 },
-    { name: "Jazz", icon: "🎺", color: "from-yellow-500 to-orange-500", count: 98 },
-    { name: "R&B", icon: "🎵", color: "from-pink-500 to-purple-500", count: 142 },
-    { name: "Rock", icon: "🎸", color: "from-red-500 to-orange-500", count: 176 },
+    { name: "Electronic", count: 234 },
+    { name: "Hip-Hop", count: 189 },
+    { name: "Indie", count: 156 },
+    { name: "Jazz", count: 98 },
+    { name: "R&B", count: 142 },
+    { name: "Rock", count: 176 },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white text-gray-900 overflow-hidden">
       {/* Hero Section */}
-      <section className="py-20 px-6 md:px-12 bg-gradient-to-br from-[var(--electric-blue)] to-[var(--vibrant-purple)] text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-40 h-40 rounded-full border-4 border-white"></div>
-          <div className="absolute bottom-20 right-20 w-60 h-60 rounded-full border-8 border-white"></div>
-          <div className="absolute top-40 right-40 w-24 h-24 bg-white rounded-full"></div>
+      <section className="relative py-24 lg:py-32 px-6 md:px-12">
+        {/* Background elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-[#3b82f6]/10 rounded-full blur-[150px]" />
+          <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-[#3b82f6]/5 rounded-full blur-[120px]" />
         </div>
 
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-5 h-5" />
-            <span className="text-sm font-medium">Curated Weekly</span>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-8">
+              <span className="w-2 h-2 bg-[#3b82f6] rounded-full animate-pulse" />
+              <span className="text-sm text-gray-600 font-medium tracking-wide uppercase">
+                Curated Weekly
+              </span>
+            </div>
+
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-[0.95] tracking-tight text-gray-900 mb-6">
+              Your Next
+              <br />
+              <span className="text-[#3b82f6]">Favorite</span> Track
+            </h1>
+
+            <p className="text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed">
+              Hand-picked recommendations based on what's hot, what's fresh, and what resonates with music lovers like you.
+            </p>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Your Next Favorite Track
-          </h1>
-          <p className="text-xl opacity-90 max-w-3xl mx-auto">
-            Hand-picked recommendations based on what's hot, what's fresh, and
-            what resonates with music lovers like you
-          </p>
         </div>
       </section>
 
       {/* This Week's Picks */}
-      <section className="py-16 px-6 md:px-12 bg-white">
+      <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-12">
-            <TrendingUp className="w-8 h-8 text-[var(--electric-blue)]" />
-            <h2 className="text-3xl font-bold">This Week's Top Picks</h2>
+          <div className="flex items-center gap-3 mb-4">
+            <TrendingUp className="w-6 h-6 text-[#3b82f6]" />
+            <span className="text-[#3b82f6] text-sm font-semibold uppercase tracking-widest">
+              Trending Now
+            </span>
           </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-12 text-gray-900">
+            This Week's Top Picks
+          </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {weeklyPicks.map((pick, index) => (
-              <Card
+              <div
                 key={pick.id}
-                className="overflow-hidden hover-lift hover-glow border-gray-200 relative"
+                className="group rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500 relative"
               >
+                {/* Rank badge */}
                 <div className="absolute top-4 right-4 z-10">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--electric-blue)] to-[var(--vibrant-purple)] flex items-center justify-center text-white font-bold shadow-lg">
+                  <div className="w-12 h-12 rounded-full bg-[#3b82f6] flex items-center justify-center text-white font-bold shadow-lg">
                     #{index + 1}
                   </div>
                 </div>
 
+                {/* Spotify Embed */}
                 <div className="aspect-square relative">
                   <iframe
                     title={`Spotify Embed: ${pick.title}`}
@@ -110,86 +119,139 @@ const Recommendations = () => {
                     frameBorder="0"
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                     loading="lazy"
-                    className="rounded-t-lg"
                   />
                 </div>
 
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-semibold text-white bg-gradient-to-r from-[var(--electric-blue)] to-[var(--vibrant-purple)] px-3 py-1 rounded-full">
-                      {pick.genre}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-1">{pick.title}</h3>
-                  <p className="text-gray-600 mb-4">
+                {/* Content */}
+                <div className="p-6 border-t border-gray-100">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3b82f6]/10 text-[#3b82f6] text-xs font-semibold mb-3">
+                    {pick.genre}
+                  </span>
+
+                  <h3 className="text-xl font-bold mb-1 text-gray-900">{pick.title}</h3>
+                  <p className="text-gray-500 mb-4">
                     {pick.artist} • {pick.album}
                   </p>
-                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-gray-700 italic">
+
+                  <div className="bg-gray-50 rounded-xl p-4 mb-5">
+                    <p className="text-sm text-gray-600 italic leading-relaxed">
                       "{pick.reason}"
                     </p>
                   </div>
-                  <Button className="w-full gradient-bg-ocean text-white hover:opacity-90">
+
+                  <Button className="w-full bg-[#3b82f6] text-white hover:bg-[#2563eb] rounded-full font-semibold transition-all duration-300 hover:shadow-[0_4px_20px_#3b82f640]">
                     <Heart className="w-4 h-4 mr-2" />
                     Add to Favorites
                   </Button>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Browse by Genre */}
-      <section className="py-16 px-6 md:px-12 bg-gray-50">
+      <section className="py-20 px-6 md:px-12 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-12">
-            <Music2 className="w-8 h-8 text-[var(--electric-blue)]" />
-            <h2 className="text-3xl font-bold">Browse by Genre</h2>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <Music className="w-6 h-6 text-[#3b82f6]" />
+                <span className="text-[#3b82f6] text-sm font-semibold uppercase tracking-widest">
+                  Explore
+                </span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+                Browse by Genre
+              </h2>
+            </div>
+            <Link
+              to="/genres"
+              className="inline-flex items-center gap-2 text-gray-500 hover:text-[#3b82f6] font-semibold transition-colors duration-300"
+            >
+              View all genres <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {genres.map((genre) => (
-              <Card
+            {genres.map((genre, index) => (
+              <div
                 key={genre.name}
-                className={`p-6 hover-lift hover-glow cursor-pointer border-0 bg-gradient-to-br ${genre.color} text-white relative overflow-hidden group`}
+                className="group p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500 cursor-pointer relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                <div className="relative z-10 text-center">
-                  <div className="text-4xl mb-3">{genre.icon}</div>
-                  <h3 className="font-bold text-lg mb-1">{genre.name}</h3>
-                  <p className="text-sm opacity-90">{genre.count} tracks</p>
+                {/* Background number */}
+                <span className="absolute -right-2 -bottom-4 text-8xl font-bold text-gray-50 group-hover:text-[#3b82f6]/5 transition-colors">
+                  {index + 1}
+                </span>
+
+                <div className="relative z-10">
+                  <div className="w-12 h-12 rounded-xl bg-[#3b82f6]/10 flex items-center justify-center group-hover:bg-[#3b82f6] transition-colors duration-300 mb-4">
+                    <Music className="w-6 h-6 text-[#3b82f6] group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-1">{genre.name}</h3>
+                  <p className="text-sm text-gray-500">{genre.count} tracks</p>
                 </div>
-              </Card>
+
+                <ArrowRight className="absolute bottom-6 right-6 w-5 h-5 text-gray-200 group-hover:text-[#3b82f6] group-hover:translate-x-1 transition-all duration-300" />
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Personalized Recommendations CTA */}
-      <section className="py-20 px-6 md:px-12 bg-gradient-to-r from-gray-900 to-black text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <Sparkles className="w-16 h-16 mx-auto mb-6 text-[var(--cyber-yellow)]" />
-          <h2 className="text-4xl font-bold mb-4">
-            Get Personalized Recommendations
+      {/* CTA Section */}
+      <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-gray-900">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
+        </div>
+
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[#3b82f6]/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#3b82f6]/10 rounded-full blur-[100px]" />
+
+        <div className="max-w-4xl mx-auto relative z-10 text-center">
+          <div className="w-20 h-20 rounded-full bg-[#3b82f6]/20 flex items-center justify-center mx-auto mb-8">
+            <Sparkles className="w-10 h-10 text-[#3b82f6]" />
+          </div>
+
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white mb-6">
+            Get Personalized
+            <br />
+            Recommendations
           </h2>
-          <p className="text-xl mb-8 text-gray-300">
-            Tell us what you like and we'll curate a custom playlist just for
-            you
+
+          <p className="text-xl text-gray-400 mb-10 max-w-xl mx-auto">
+            Tell us what you like and we'll curate a custom playlist just for you.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
+              asChild
               size="lg"
-              className="flex-1 gradient-bg-sunset text-white hover:opacity-90 px-8"
+              className="bg-[#3b82f6] text-white hover:bg-[#2563eb] rounded-full px-10 py-7 text-lg font-bold shadow-2xl hover:scale-105 transition-transform duration-300"
             >
-              Create My Playlist
+              <Link to="/quiz">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Create My Playlist
+              </Link>
             </Button>
+
             <Button
+              asChild
               size="lg"
               variant="outline"
-              className="flex-1 bg-transparent border-white text-white hover:bg-white/10"
+              className="bg-transparent border-2 border-gray-700 text-white hover:bg-white/10 hover:border-gray-500 rounded-full px-10 py-7 text-lg font-semibold transition-all duration-300"
             >
-              Take Quiz
+              <Link to="/trivia">
+                <Play className="w-5 h-5 mr-2" />
+                Take Music Quiz
+              </Link>
             </Button>
           </div>
         </div>
