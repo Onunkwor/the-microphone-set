@@ -3,58 +3,90 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Interviews = () => {
-  const interviews = [
+   const interviews = [
     {
       id: 1,
-      artist: "Luna Waves",
-      genre: "Electronic / Indie",
-      title: "Creating Soundscapes: A Journey Through Electronic Music",
+      artist: "Syntax The Creator",
+      genre: "Afrofusion",
+      title: "Sharing the Space with Syntax The Creator",
       excerpt:
-        "We sit down with Luna Waves to discuss her creative process, influences, and the future of electronic music.",
-      date: "2025-01-18",
-      duration: "42 min",
+        "A discussion with Syntax The Creator on his amazing artistry, with co-host EnnytheFairy and speaker tomiyourgee.",
+      date: "2026-01-04",
+      duration: "40 min",
       image:
-        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=3270&auto=format&fit=crop",
+        "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages211/v4/42/e5/61/42e561ba-9319-9873-9099-26319171fa6b/ami-identity-dbe7b9a2fdc5ea53247dffbbcfd67969-2024-11-30T14-58-04.496Z_cropped.png/1200x630cw.png",
       featured: true,
+      url: "https://x.com/MicrophoneSet/status/2007889837417013498",
     },
     {
       id: 2,
-      artist: "Marcus Stone",
+      artist: "sickoboymp3",
       genre: "Hip-Hop / Rap",
-      title: "From the Streets to Stardom: The Marcus Stone Story",
+      title: "Conversation with sickoboymp3 on &WSIC",
       excerpt:
-        "An intimate conversation about authenticity, struggle, and success in hip-hop.",
-      date: "2025-01-14",
-      duration: "38 min",
+        "A conversation with sickoboymp3 on his forthcoming project “&WSIC” with contributions from thetodi and nas_mkay.",
+      date: "2025-11-03",
+      duration: "40 min",
       image:
-        "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?q=80&w=3270&auto=format&fit=crop",
+        "https://i.ytimg.com/vi/kMHVWEsuiYs/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEEgZChlMA8=&rs=AOn4CLDnNAZjEatpGjZo3l4WrC-n6ykUrA",
       featured: false,
+      url: "https://x.com/MicrophoneSet/status/1985451270677664008",
     },
     {
       id: 3,
-      artist: "The Midnight Collective",
-      genre: "Jazz / Fusion",
-      title: "Keeping Jazz Alive in the Digital Age",
+      artist: "B4MIDELE",
+      genre: "Indie Soul / R&B",
+      title: "Conversation with B4MIDELE on A///G",
       excerpt:
-        "How this collective is bringing jazz to new audiences through innovation and collaboration.",
-      date: "2025-01-10",
+        "Discussing B4MIDELE's upcoming two-pack 'A///G', his creative process, and music journey.",
+      date: "2025-04-11",
       duration: "35 min",
       image:
-        "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?q=80&w=3270&auto=format&fit=crop",
+        "https://images.squarespace-cdn.com/content/v1/5a5653aeb7411ce23017e460/008c2f3b-ea5c-4009-bbdb-2d0875db2828/22-11-27+Steven+bamidele+Album+Shoot+Roll+6+Edits+00002.jpeg",
       featured: false,
+      url: "https://x.com/microphoneset/status/1910785025634693244",
     },
     {
       id: 4,
-      artist: "Aria Chen",
-      genre: "R&B / Soul",
-      title: "Vulnerability and Strength: The Duality of Soul Music",
+      artist: "AsaduChinaza",
+      genre: "Afrobeats / Pop",
+      title: "Thrilling Conversation with AsaduChinaza",
       excerpt:
-        "Aria Chen opens up about emotional storytelling and connecting with audiences.",
-      date: "2025-01-06",
+        "An engaging talk with AsaduChinaza about her new release, influences, and other music-related topics.",
+      date: "2024-01-13",
       duration: "45 min",
       image:
-        "https://images.unsplash.com/photo-1598387993441-a364f854c3e1?q=80&w=3270&auto=format&fit=crop",
+        "https://i.ytimg.com/vi/QLTTGAjRnRQ/sddefault.jpg?sqp=-oaymwEmCIAFEOAD8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFggXChlMA8=&rs=AOn4CLBucB8gn9-AveeUVEUoZBxPKu8ekA",
       featured: false,
+      url: "https://x.com/microphoneset/status/1746260938359988660",
+    },
+    {
+      id: 5,
+      artist: "Fasina",
+      genre: "Afropop / Alternative R&B",
+      title: "Space with Fasina",
+      excerpt:
+        "A fun conversation with Fasina exploring his music, influences, and bridging pop and Afro genres.",
+      date: "2023-11-18",
+      duration: "38 min",
+      image:
+        "http://thenativemag.com/wp-content/uploads/2017/09/Fasina-1.png",
+      featured: false,
+      url: "https://x.com/microphoneset/status/1725969442394210405",
+    },
+    {
+      id: 6,
+      artist: "Emaxee",
+      genre: "Afrobeats / Hip-Hop / Rap",
+      title: "Sharing the Space with Emaxee",
+      excerpt:
+        "A discussion with Emaxee on his music, creative process, and journey as a rapper and songwriter.",
+      date: "2023-06-11",
+      duration: "42 min",
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages221/v4/f1/e7/65/f1e76513-7d30-aecc-adea-8e52ecb57a06/file_cropped.png/1200x630cw.png",
+      featured: false,
+      url: "https://x.com/microphoneset/status/1667954745246470152",
     },
   ];
 
