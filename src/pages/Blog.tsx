@@ -1,6 +1,5 @@
 import { BookOpen, Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 const Blog = () => {
  const articles = [
@@ -216,7 +215,6 @@ const Blog = () => {
   },
 ];
 
-  const featuredArticle = null;
   const regularArticles = articles;
 
   return (
