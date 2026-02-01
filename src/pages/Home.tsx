@@ -62,10 +62,13 @@ const Home = () => {
     const fetchPlaylists = async () => {
       try {
         const data = await playlistsApi.getAll();
-        if (data && Array.isArray(data) && data.length > 0) {
+        console.log("Home page - Playlists data:", data); // Debug log
+        if (data && data.length > 0) {
           // Filter for featured playlists first, or take first 3
-          const featuredData = data.filter((item: Playlist) => item.featured).slice(0, 3);
-          const playlistsToShow = featuredData.length > 0 ? featuredData : data.slice(0, 3);
+          const featuredData = data.filter((item: Playlist) => item.featured);
+          const playlistsToShow = featuredData.length >= 3 
+            ? featuredData.slice(0, 3) 
+            : data.slice(0, 3);
           
           const mapped: FeaturedPlaylist[] = playlistsToShow.map((item: Playlist) => ({
             id: item.spotifyId,
@@ -75,14 +78,13 @@ const Home = () => {
             duration: "—",
             genre: item.genre || "Various",
           }));
+          console.log("Home page - Mapped playlists:", mapped); // Debug log
           setFeaturedPlaylists(mapped);
         } else {
-          // Keep fallback playlists if no data
           console.warn("No playlist data received, using fallback");
         }
       } catch (error) {
         console.error("Error fetching playlists, using fallback:", error);
-        // Keep fallback playlists on error
       } finally {
         setIsLoadingPlaylists(false);
       }
