@@ -105,7 +105,7 @@ export const RecommendationSkeleton = () => (
 );
 
 // Page loading skeleton with hero section
-export const PageLoadingSkeleton = ({ title }: { title: string }) => (
+export const PageLoadingSkeleton = () => (
   <div className="bg-white text-gray-900 min-h-screen">
     {/* Hero skeleton */}
     <section className="relative py-24 lg:py-32 px-6 md:px-12">

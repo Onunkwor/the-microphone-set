@@ -11,7 +11,6 @@ import { useState, useEffect } from "react";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { Footer } from "@/components/ui/footer";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Logo } from "@/components/Logo";
 import { triviaApi } from "@/services/api";
 
 const Layout = () => {
