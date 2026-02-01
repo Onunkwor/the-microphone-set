@@ -74,14 +74,39 @@ const Playlists = () => {
       try {
         const data = await playlistsApi.getAll();
         if (data && data.length > 0) {
-          const mapped: PlaylistDisplay[] = data.map((item: Playlist) => ({
-            id: item.spotifyId,
-            title: item.title,
-            description: item.description,
-            duration: "—",
-            tracks: 0,
-            type: "playlist" as const,
-          }));
+          const mapped: PlaylistDisplay[] = data.map((item: Playlist) => {
+            // Parse Spotify URL to extract type and ID
+            // URL format: https://open.spotify.com/{type}/{id}
+            let spotifyType: "album" | "playlist" = "playlist"; // default to playlist
+            let spotifyId = item.spotifyId;
+
+            if (item.spotifyUrl) {
+              try {
+                const url = item.spotifyUrl.replace(/\/$/, ''); // remove trailing slash
+                const parts = url.split('/');
+                const id = parts.pop();
+                const type = parts.pop();
+
+                if (id && type && ['track', 'album', 'playlist'].includes(type)) {
+                  spotifyId = id.split('?')[0]; // remove query params if any
+                  if (type === 'album' || type === 'playlist') {
+                    spotifyType = type as "album" | "playlist";
+                  }
+                }
+              } catch (e) {
+                console.log('Error parsing Spotify URL:', e);
+              }
+            }
+
+            return {
+              id: spotifyId,
+              title: item.title,
+              description: item.description,
+              duration: "—",
+              tracks: 0,
+              type: spotifyType,
+            };
+          });
           setPlaylists(mapped);
         }
       } catch (error) {

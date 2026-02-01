@@ -163,6 +163,54 @@ export interface Trivia {
   active: boolean;
 }
 
+// Leaderboard interfaces
+export interface QuizAnswer {
+  questionId: string;
+  selectedAnswer: number;
+}
+
+export interface QuizSubmission {
+  userName: string;
+  answers: QuizAnswer[];
+  sessionId: string;
+}
+
+export interface QuizSubmissionResponse {
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  ranking: number;
+}
+
+export interface LeaderboardEntry {
+  _id: string;
+  userName: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  category: string;
+  difficulty: string;
+  completedAt: string;
+  rank?: number;
+}
+
+export interface LeaderboardResponse {
+  results: LeaderboardEntry[];
+  total: number;
+  hasMore: boolean;
+}
+
+export interface LeaderboardStats {
+  totalQuizzes: number;
+  averagePercentage: number;
+  topScore: {
+    userName: string;
+    percentage: number;
+    score: number;
+    totalQuestions: number;
+  } | null;
+}
+
 export const blogsApi = createCrudApi<Blog>('blogs');
 export const artistsApi = createCrudApi<Artist>('artists');
 export const interviewsApi = createCrudApi<Interview>('interviews');
@@ -172,4 +220,27 @@ export const recommendationsApi = createCrudApi<Recommendation>('recommendations
 export const triviaApi = {
   ...createCrudApi<Trivia>('trivia'),
   getRandom: (count: number = 10) => fetchApi<Trivia[]>(`/trivia/random/${count}`),
+};
+
+export const leaderboardApi = {
+  submit: (data: QuizSubmission) =>
+    fetchApi<QuizSubmissionResponse>('/leaderboard/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getLeaderboard: (params?: {
+    limit?: number;
+    offset?: number;
+    category?: string;
+    difficulty?: string;
+    period?: 'all-time' | 'monthly' | 'weekly';
+  }) => {
+    const query = params ? `?${new URLSearchParams(params as Record<string, string>)}` : '';
+    return fetchApi<LeaderboardResponse>(`/leaderboard${query}`);
+  },
+  getPersonalBest: (userName: string, params?: { category?: string; difficulty?: string }) => {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    return fetchApi<LeaderboardEntry>(`/leaderboard/personal/${encodeURIComponent(userName)}${query}`);
+  },
+  getStats: () => fetchApi<LeaderboardStats>('/leaderboard/stats'),
 };

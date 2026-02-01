@@ -25,6 +25,7 @@ interface FeaturedPlaylist {
   tracks: string;
   duration: string;
   genre: string;
+  type: string;
 }
 
 const fallbackPlaylists: FeaturedPlaylist[] = [
@@ -35,6 +36,7 @@ const fallbackPlaylists: FeaturedPlaylist[] = [
     tracks: "24 tracks",
     duration: "1hr 42min",
     genre: "Chill",
+    type: "album",
   },
   {
     id: "3NARoU8KzfUJZ6o4mWVIRV",
@@ -43,6 +45,7 @@ const fallbackPlaylists: FeaturedPlaylist[] = [
     tracks: "18 tracks",
     duration: "58min",
     genre: "Acoustic",
+    type: "album",
   },
   {
     id: "79WcTJuCulopfqul1awYJk",
@@ -51,6 +54,7 @@ const fallbackPlaylists: FeaturedPlaylist[] = [
     tracks: "32 tracks",
     duration: "2hr 15min",
     genre: "Ambient",
+    type: "album",
   },
 ];
 
@@ -65,18 +69,42 @@ const Home = () => {
         if (data && data.length > 0) {
           // Filter for featured playlists first, or take first 3
           const featuredData = data.filter((item: Playlist) => item.featured);
-          const playlistsToShow = featuredData.length >= 3 
-            ? featuredData.slice(0, 3) 
+          const playlistsToShow = featuredData.length >= 3
+            ? featuredData.slice(0, 3)
             : data.slice(0, 3);
-          
-          const mapped: FeaturedPlaylist[] = playlistsToShow.map((item: Playlist) => ({
-            id: item.spotifyId,
-            title: item.title,
-            description: item.description || "Curated playlist",
-            tracks: "—",
-            duration: "—",
-            genre: item.genre || "Various",
-          }));
+
+          const mapped: FeaturedPlaylist[] = playlistsToShow.map((item: Playlist) => {
+            // Parse Spotify URL to extract type and ID
+            // URL format: https://open.spotify.com/{type}/{id}
+            let spotifyType = "playlist"; // default to playlist
+            let spotifyId = item.spotifyId;
+
+            if (item.spotifyUrl) {
+              try {
+                const url = item.spotifyUrl.replace(/\/$/, ''); // remove trailing slash
+                const parts = url.split('/');
+                const id = parts.pop();
+                const type = parts.pop();
+
+                if (id && type && ['track', 'album', 'playlist'].includes(type)) {
+                  spotifyId = id.split('?')[0]; // remove query params if any
+                  spotifyType = type;
+                }
+              } catch (e) {
+                console.log('Error parsing Spotify URL:', e);
+              }
+            }
+
+            return {
+              id: spotifyId,
+              title: item.title,
+              description: item.description || "Curated playlist",
+              tracks: "—",
+              duration: "—",
+              genre: item.genre || "Various",
+              type: spotifyType,
+            };
+          });
           setFeaturedPlaylists(mapped);
         } else {
           console.warn("No playlist data received, using fallback");
@@ -434,7 +462,7 @@ const Home = () => {
                 <div className="aspect-square">
                   <iframe
                     title={`Spotify Embed: ${playlist.title}`}
-                    src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator&theme=0`}
+                    src={`https://open.spotify.com/embed/${playlist.type}/${playlist.id}?utm_source=generator&theme=0`}
                     width="100%"
                     height="100%"
                     frameBorder="0"

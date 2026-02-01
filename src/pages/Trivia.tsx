@@ -2,7 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { Share2, RotateCcw, Trophy, Copy, Facebook, ArrowRight, Loader2, Mic2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { triviaApi, type Trivia as TriviaType } from "@/services/api";
+import { triviaApi, leaderboardApi, type Trivia as TriviaType } from "@/services/api";
+import { MissedQuestions } from "@/components/trivia/MissedQuestions";
+import { LeaderboardPreview } from "@/components/trivia/LeaderboardPreview";
+import { Confetti } from "@/components/trivia/Confetti";
 
 interface Question {
   question: string;
@@ -71,8 +74,10 @@ const Trivia = () => {
   const [userName, setUserName] = useState("");
   const [showWelcome, setShowWelcome] = useState(true);
   const [visibleQuestion, setVisibleQuestion] = useState(0);
-  const [questions, setQuestions] = useState<Question[]>(fallbackQuestions);
+  const [questions, setQuestions] = useState<TriviaType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sessionId] = useState(() => `${Date.now()}-${Math.random().toString(36).substring(2)}`);
+  const [userRanking, setUserRanking] = useState<number>();
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   // Fetch questions from API with fallback
@@ -81,15 +86,35 @@ const Trivia = () => {
       try {
         const data = await triviaApi.getRandom(8);
         if (data && data.length > 0) {
-          const mappedQuestions: Question[] = data.map((item: TriviaType) => ({
-            question: item.question,
-            options: item.options,
-            correct: item.correctAnswer,
+          // Store full TriviaType objects to preserve explanations
+          setQuestions(data);
+        } else {
+          // Map fallback to TriviaType format
+          const mappedFallback: TriviaType[] = fallbackQuestions.map((q, i) => ({
+            _id: `fallback-${i}`,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correct,
+            category: 'general',
+            difficulty: 'medium',
+            explanation: 'This is a fallback question.',
+            active: true,
           }));
-          setQuestions(mappedQuestions);
+          setQuestions(mappedFallback);
         }
       } catch (error) {
         console.log("Using fallback questions:", error);
+        const mappedFallback: TriviaType[] = fallbackQuestions.map((q, i) => ({
+          _id: `fallback-${i}`,
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correct,
+          category: 'general',
+          difficulty: 'medium',
+          explanation: 'This is a fallback question.',
+          active: true,
+        }));
+        setQuestions(mappedFallback);
       } finally {
         setIsLoading(false);
       }
@@ -147,15 +172,42 @@ const Trivia = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!userName.trim()) {
+      alert("Please enter your name before submitting!");
+      return;
+    }
+
+    // Calculate score client-side for immediate feedback
     let finalScore = 0;
     questions.forEach((question, index) => {
-      if (selectedAnswers[index] === question.correct) {
+      if (selectedAnswers[index] === question.correctAnswer) {
         finalScore++;
       }
     });
     setScore(finalScore);
+
+    // Submit to backend for leaderboard
+    try {
+      const answers = questions.map((question, index) => ({
+        questionId: question._id!,
+        selectedAnswer: selectedAnswers[index],
+      }));
+
+      const result = await leaderboardApi.submit({
+        userName: userName.trim(),
+        answers,
+        sessionId,
+      });
+
+      setUserRanking(result.ranking);
+    } catch (error) {
+      console.error("Failed to submit score:", error);
+      // Continue to results even if submission fails
+    }
+
     setIsComplete(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const resetQuiz = () => {
@@ -200,6 +252,9 @@ const Trivia = () => {
   if (isComplete) {
     return (
       <div className="bg-white text-gray-900 overflow-hidden min-h-screen">
+        {/* Confetti celebration for high scores */}
+        {percentage >= 80 && <Confetti />}
+
         <div className="relative py-24 px-6 md:px-12">
           {/* Background elements */}
           <div className="absolute inset-0 z-0">
@@ -207,14 +262,16 @@ const Trivia = () => {
             <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-[#3b82f6]/5 rounded-full blur-[120px]" />
           </div>
 
-          <div className="max-w-2xl mx-auto relative z-10">
-            <div className="text-center mb-12">
+          <div className="max-w-4xl mx-auto relative z-10 space-y-12">
+            {/* Header */}
+            <div className="text-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
                 <Mic2 className="w-4 h-4 text-[#3b82f6]" />
                 <span className="text-sm text-gray-600 font-medium">The Microphone Set</span>
               </div>
             </div>
 
+            {/* Score Overview */}
             <div className="p-8 md:p-10 rounded-3xl bg-white border border-gray-100 shadow-xl">
               <div className="text-center mb-8">
                 <div className="w-20 h-20 rounded-full bg-[#3b82f6] flex items-center justify-center mx-auto mb-6 shadow-lg">
@@ -285,8 +342,14 @@ const Trivia = () => {
               </div>
             </div>
 
+            {/* Missed Questions Review */}
+            <MissedQuestions questions={questions} selectedAnswers={selectedAnswers} />
+
+            {/* Leaderboard Preview */}
+            <LeaderboardPreview userRanking={userRanking} userName={userName} />
+
             {/* Explore more */}
-            <div className="mt-12 text-center">
+            <div className="text-center">
               <p className="text-gray-500 mb-4">Want to discover more music?</p>
               <Link
                 to="/recommendations"
@@ -357,6 +420,35 @@ const Trivia = () => {
           </div>
         </div>
       </section>
+
+      {/* Name Input (if not provided) */}
+      {!userName && (
+        <section className="py-8 px-6 md:px-12">
+          <div className="max-w-md mx-auto p-8 rounded-2xl bg-white border border-gray-200 shadow-lg">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Enter Your Name</h3>
+            <p className="text-gray-600 mb-4">
+              Your name will be displayed on the leaderboard if you make it to the top!
+            </p>
+            <input
+              type="text"
+              placeholder="Your name"
+              className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-[#3b82f6] outline-none transition-colors"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                  setUserName(e.currentTarget.value.trim());
+                }
+              }}
+              onBlur={(e) => {
+                if (e.currentTarget.value.trim()) {
+                  setUserName(e.currentTarget.value.trim());
+                }
+              }}
+              maxLength={50}
+              autoFocus
+            />
+          </div>
+        </section>
+      )}
 
       {/* Questions */}
       <section className="py-8 px-6 md:px-12">

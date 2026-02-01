@@ -1,6 +1,7 @@
 import Layout from "@/layout/Layout";
 import Home from "@/pages/Home";
 import Trivia from "@/pages/Trivia";
+import Leaderboard from "@/pages/Leaderboard";
 import Playlists from "@/pages/Playlists";
 import Blog from "@/pages/Blog";
 import Interviews from "@/pages/Interviews";
@@ -36,6 +37,10 @@ export const AppRouter = () => {
         {
           path: "trivia",
           element: <Trivia />,
+        },
+        {
+          path: "trivia/leaderboard",
+          element: <Leaderboard />,
         },
         {
           path: "playlists",

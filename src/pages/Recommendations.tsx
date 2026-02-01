@@ -75,17 +75,40 @@ const Recommendations = () => {
       try {
         const data = await recommendationsApi.getAll();
         if (data && data.length > 0) {
-          const mapped: WeeklyPick[] = data.slice(0, 3).map((item: Recommendation, index: number) => ({
-            id: index + 1,
-            title: item.title,
-            artist: item.artist,
-            genre: item.genre,
-            album: item.album,
-            year: new Date().getFullYear(),
-            reason: item.description,
-            spotifyId: item.spotifyUrl?.split("/").pop() || "64LkgCfNbLqjclQYCTid8L",
-            type: "album",
-          }));
+          const mapped: WeeklyPick[] = data.slice(0, 3).map((item: Recommendation, index: number) => {
+            // Parse Spotify URL to extract type and ID
+            // URL format: https://open.spotify.com/{type}/{id}
+            let spotifyType = "track"; // default to track
+            let spotifyId = "64LkgCfNbLqjclQYCTid8L"; // fallback ID
+
+            if (item.spotifyUrl) {
+              try {
+                const url = item.spotifyUrl.replace(/\/$/, ''); // remove trailing slash
+                const parts = url.split('/');
+                const id = parts.pop();
+                const type = parts.pop();
+
+                if (id && type && ['track', 'album', 'playlist'].includes(type)) {
+                  spotifyId = id.split('?')[0]; // remove query params if any
+                  spotifyType = type;
+                }
+              } catch (e) {
+                console.log('Error parsing Spotify URL:', e);
+              }
+            }
+
+            return {
+              id: index + 1,
+              title: item.title,
+              artist: item.artist,
+              genre: item.genre,
+              album: item.album,
+              year: new Date().getFullYear(),
+              reason: item.description,
+              spotifyId,
+              type: spotifyType,
+            };
+          });
           setWeeklyPicks(mapped);
         }
       } catch (error) {
