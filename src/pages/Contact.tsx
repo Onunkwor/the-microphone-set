@@ -29,8 +29,8 @@ const Contact = () => {
       icon: Mail,
       title: "Email Us",
       description: "Send us an email anytime",
-      value: "hello@themicrophoneset.com",
-      href: "mailto:hello@themicrophoneset.com",
+      value: "themicrophoneset@gmail.com",
+      href: "mailto:themicrophoneset@gmail.com",
     },
     {
       icon: MessageSquare,
@@ -43,14 +43,14 @@ const Contact = () => {
       icon: Phone,
       title: "Call Us",
       description: "Give us a call",
-      value: "+1 (555) 123-4567",
-      href: "tel:+15551234567",
+      value: "+234 704 066 5597",
+      href: "tel:+2347040665597",
     },
   ];
 
   const socialLinks = [
     { icon: Instagram, name: "Instagram", handle: "@themicrophoneset", href: "#" },
-    { icon: Twitter, name: "Twitter", handle: "@themicset", href: "#" },
+    { icon: Twitter, name: "Twitter", handle: "@MicrophoneSet", href: "#" },
     { icon: Youtube, name: "YouTube", handle: "The Microphone Set", href: "#" },
   ];
 
@@ -219,11 +219,11 @@ const Contact = () => {
                   <div>
                     <h3 className="font-bold text-lg text-gray-900 mb-2">Our Office</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      123 Music Street
+                      Primewater Gardens 2
                       <br />
-                      Los Angeles, CA 90001
+                      Freedom Way, Lekki
                       <br />
-                      United States
+                      Lagos, Nigeria
                     </p>
                   </div>
                 </div>
