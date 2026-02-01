@@ -25,6 +25,10 @@ export const StickyBanner = ({
     }
   });
 
+  if (!open) {
+    return null;
+  }
+
   return (
     <motion.div
       className={cn(
@@ -36,8 +40,12 @@ export const StickyBanner = ({
         opacity: 0,
       }}
       animate={{
-        y: open ? 0 : -100,
-        opacity: open ? 1 : 0,
+        y: 0,
+        opacity: 1,
+      }}
+      exit={{
+        y: -100,
+        opacity: 0,
       }}
       transition={{
         duration: 0.3,
@@ -54,7 +62,7 @@ export const StickyBanner = ({
           scale: 1,
         }}
         className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen(false)}
       >
         <CloseIcon className="h-5 w-5 text-white" />
       </motion.button>

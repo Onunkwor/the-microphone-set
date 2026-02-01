@@ -1,4 +1,9 @@
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
+// Check if API URL is configured
+if (!API_BASE && import.meta.env.MODE === 'production') {
+  console.warn('⚠️ VITE_API_URL is not configured. API calls will fail.');
+}
 
 // Auth helpers
 export const getToken = () => localStorage.getItem('admin_token');

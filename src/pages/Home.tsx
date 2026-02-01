@@ -62,7 +62,7 @@ const Home = () => {
     const fetchPlaylists = async () => {
       try {
         const data = await playlistsApi.getAll();
-        if (data && data.length > 0) {
+        if (data && Array.isArray(data) && data.length > 0) {
           // Filter for featured playlists first, or take first 3
           const featuredData = data.filter((item: Playlist) => item.featured).slice(0, 3);
           const playlistsToShow = featuredData.length > 0 ? featuredData : data.slice(0, 3);
@@ -76,9 +76,13 @@ const Home = () => {
             genre: item.genre || "Various",
           }));
           setFeaturedPlaylists(mapped);
+        } else {
+          // Keep fallback playlists if no data
+          console.warn("No playlist data received, using fallback");
         }
       } catch (error) {
         console.error("Error fetching playlists, using fallback:", error);
+        // Keep fallback playlists on error
       } finally {
         setIsLoadingPlaylists(false);
       }
