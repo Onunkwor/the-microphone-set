@@ -62,7 +62,6 @@ const Home = () => {
     const fetchPlaylists = async () => {
       try {
         const data = await playlistsApi.getAll();
-        console.log("Home page - Playlists data:", data); // Debug log
         if (data && data.length > 0) {
           // Filter for featured playlists first, or take first 3
           const featuredData = data.filter((item: Playlist) => item.featured);
@@ -78,7 +77,6 @@ const Home = () => {
             duration: "—",
             genre: item.genre || "Various",
           }));
-          console.log("Home page - Mapped playlists:", mapped); // Debug log
           setFeaturedPlaylists(mapped);
         } else {
           console.warn("No playlist data received, using fallback");
