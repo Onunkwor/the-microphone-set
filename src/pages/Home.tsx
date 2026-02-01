@@ -436,7 +436,7 @@ const Home = () => {
                 <div className="aspect-square">
                   <iframe
                     title={`Spotify Embed: ${playlist.title}`}
-                    src={`https://open.spotify.com/embed/album/${playlist.id}?utm_source=generator&theme=0`}
+                    src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator&theme=0`}
                     width="100%"
                     height="100%"
                     frameBorder="0"
