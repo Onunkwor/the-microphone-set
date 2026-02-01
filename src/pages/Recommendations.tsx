@@ -1,55 +1,102 @@
-import { Sparkles, TrendingUp, Heart, Music, ArrowRight, Play } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Zap, TrendingUp, Heart, Music, ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { recommendationsApi, type Recommendation } from "@/services/api";
+import { RecommendationSkeleton } from "@/components/ui/skeleton";
+
+interface WeeklyPick {
+  id: number;
+  title: string;
+  artist: string;
+  genre: string;
+  album: string;
+  year: number;
+  reason: string;
+  spotifyId: string;
+  type: string;
+}
+
+const fallbackPicks: WeeklyPick[] = [
+  {
+    id: 1,
+    title: "Midnight Drive",
+    artist: "Neon Pulse",
+    genre: "Synthwave",
+    album: "Electric Dreams",
+    year: 2025,
+    reason:
+      "Perfect blend of retro synths and modern production. This track captures the essence of late-night city drives.",
+    spotifyId: "64LkgCfNbLqjclQYCTid8L",
+    type: "album",
+  },
+  {
+    id: 2,
+    title: "Golden Hour",
+    artist: "Luna Ray",
+    genre: "Indie Pop",
+    album: "Sunset Stories",
+    year: 2024,
+    reason:
+      "Ethereal vocals meet dreamy instrumentation. A perfect soundtrack for those peaceful moments.",
+    spotifyId: "3NARoU8KzfUJZ6o4mWVIRV",
+    type: "album",
+  },
+  {
+    id: 3,
+    title: "Urban Poetry",
+    artist: "The Wordsmith",
+    genre: "Hip-Hop",
+    album: "City Tales",
+    year: 2025,
+    reason:
+      "Raw, honest storytelling over crisp beats. This is hip-hop at its finest.",
+    spotifyId: "79WcTJuCulopfqul1awYJk",
+    type: "album",
+  },
+];
+
+const fallbackGenres = [
+  { name: "Electronic", count: 234 },
+  { name: "Hip-Hop", count: 189 },
+  { name: "Indie", count: 156 },
+  { name: "Jazz", count: 98 },
+  { name: "R&B", count: 142 },
+  { name: "Rock", count: 176 },
+];
 
 const Recommendations = () => {
-  const weeklyPicks = [
-    {
-      id: 1,
-      title: "Midnight Drive",
-      artist: "Neon Pulse",
-      genre: "Synthwave",
-      album: "Electric Dreams",
-      year: 2025,
-      reason:
-        "Perfect blend of retro synths and modern production. This track captures the essence of late-night city drives.",
-      spotifyId: "64LkgCfNbLqjclQYCTid8L",
-      type: "album",
-    },
-    {
-      id: 2,
-      title: "Golden Hour",
-      artist: "Luna Ray",
-      genre: "Indie Pop",
-      album: "Sunset Stories",
-      year: 2024,
-      reason:
-        "Ethereal vocals meet dreamy instrumentation. A perfect soundtrack for those peaceful moments.",
-      spotifyId: "3NARoU8KzfUJZ6o4mWVIRV",
-      type: "album",
-    },
-    {
-      id: 3,
-      title: "Urban Poetry",
-      artist: "The Wordsmith",
-      genre: "Hip-Hop",
-      album: "City Tales",
-      year: 2025,
-      reason:
-        "Raw, honest storytelling over crisp beats. This is hip-hop at its finest.",
-      spotifyId: "79WcTJuCulopfqul1awYJk",
-      type: "album",
-    },
-  ];
+  const [weeklyPicks, setWeeklyPicks] = useState<WeeklyPick[]>(fallbackPicks);
+  const [genres] = useState(fallbackGenres);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const genres = [
-    { name: "Electronic", count: 234 },
-    { name: "Hip-Hop", count: 189 },
-    { name: "Indie", count: 156 },
-    { name: "Jazz", count: 98 },
-    { name: "R&B", count: 142 },
-    { name: "Rock", count: 176 },
-  ];
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const data = await recommendationsApi.getAll();
+        if (data && data.length > 0) {
+          const mapped: WeeklyPick[] = data.slice(0, 3).map((item: Recommendation, index: number) => ({
+            id: index + 1,
+            title: item.title,
+            artist: item.artist,
+            genre: item.genre,
+            album: item.album,
+            year: new Date().getFullYear(),
+            reason: item.description,
+            spotifyId: item.spotifyUrl?.split("/").pop() || "64LkgCfNbLqjclQYCTid8L",
+            type: "album",
+          }));
+          setWeeklyPicks(mapped);
+        }
+      } catch (error) {
+        console.log("Using fallback recommendations:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
 
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
@@ -97,7 +144,9 @@ const Recommendations = () => {
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {weeklyPicks.map((pick, index) => (
+            {isLoading ? (
+              [...Array(3)].map((_, i) => <RecommendationSkeleton key={i} />)
+            ) : weeklyPicks.map((pick, index) => (
               <div
                 key={pick.id}
                 className="group rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500 relative"
@@ -217,7 +266,7 @@ const Recommendations = () => {
 
         <div className="max-w-4xl mx-auto relative z-10 text-center">
           <div className="w-20 h-20 rounded-full bg-[#3b82f6]/20 flex items-center justify-center mx-auto mb-8">
-            <Sparkles className="w-10 h-10 text-[#3b82f6]" />
+            <Zap className="w-10 h-10 text-[#3b82f6]" />
           </div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white mb-6">
@@ -237,7 +286,7 @@ const Recommendations = () => {
               className="bg-[#3b82f6] text-white hover:bg-[#2563eb] rounded-full px-10 py-7 text-lg font-bold shadow-2xl hover:scale-105 transition-transform duration-300"
             >
               <Link to="/quiz">
-                <Sparkles className="w-5 h-5 mr-2" />
+                <Zap className="w-5 h-5 mr-2" />
                 Create My Playlist
               </Link>
             </Button>

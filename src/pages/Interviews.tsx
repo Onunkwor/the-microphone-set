@@ -1,23 +1,38 @@
+import { useState, useEffect } from "react";
 import { Mic, Play, Calendar, ArrowRight, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { interviewsApi, type Interview as InterviewType } from "@/services/api";
+import { InterviewSkeleton, FeaturedInterviewSkeleton } from "@/components/ui/skeleton";
 
-const Interviews = () => {
-   const interviews = [
-    {
-      id: 1,
-      artist: "Syntax The Creator",
-      genre: "Afrofusion",
-      title: "Sharing the Space with Syntax The Creator",
-      excerpt:
-        "A discussion with Syntax The Creator on his amazing artistry, with co-host EnnytheFairy and speaker tomiyourgee.",
-      date: "2026-01-04",
-      duration: "40 min",
-      image:
-        "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages211/v4/42/e5/61/42e561ba-9319-9873-9099-26319171fa6b/ami-identity-dbe7b9a2fdc5ea53247dffbbcfd67969-2024-11-30T14-58-04.496Z_cropped.png/1200x630cw.png",
-      featured: true,
-      url: "https://x.com/MicrophoneSet/status/2007889837417013498",
-    },
+interface InterviewDisplay {
+  id: number;
+  artist: string;
+  genre: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  duration: string;
+  image: string;
+  featured: boolean;
+  url: string;
+}
+
+const fallbackInterviews: InterviewDisplay[] = [
+  {
+    id: 1,
+    artist: "Syntax The Creator",
+    genre: "Afrofusion",
+    title: "Sharing the Space with Syntax The Creator",
+    excerpt:
+      "A discussion with Syntax The Creator on his amazing artistry, with co-host EnnytheFairy and speaker tomiyourgee.",
+    date: "2026-01-04",
+    duration: "40 min",
+    image:
+      "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages211/v4/42/e5/61/42e561ba-9319-9873-9099-26319171fa6b/ami-identity-dbe7b9a2fdc5ea53247dffbbcfd67969-2024-11-30T14-58-04.496Z_cropped.png/1200x630cw.png",
+    featured: true,
+    url: "https://x.com/MicrophoneSet/status/2007889837417013498",
+  },
     {
       id: 2,
       artist: "sickoboymp3",
@@ -88,7 +103,40 @@ const Interviews = () => {
       featured: false,
       url: "https://x.com/microphoneset/status/1667954745246470152",
     },
-  ];
+];
+
+const Interviews = () => {
+  const [interviews, setInterviews] = useState<InterviewDisplay[]>(fallbackInterviews);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInterviews = async () => {
+      try {
+        const data = await interviewsApi.getAll();
+        if (data && data.length > 0) {
+          const mapped: InterviewDisplay[] = data.map((item: InterviewType, index: number) => ({
+            id: index + 1,
+            artist: item.artistName,
+            genre: item.platform,
+            title: item.title,
+            excerpt: item.description,
+            date: new Date().toISOString(),
+            duration: "40 min",
+            image: item.image,
+            featured: item.featured,
+            url: item.externalUrl,
+          }));
+          setInterviews(mapped);
+        }
+      } catch (error) {
+        console.log("Using fallback interviews:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInterviews();
+  }, []);
 
   const featuredInterview = interviews.find((interview) => interview.featured);
   const regularInterviews = interviews.filter((interview) => !interview.featured);
@@ -126,13 +174,15 @@ const Interviews = () => {
       </section>
 
       {/* Featured Interview */}
-      {featuredInterview && (
-        <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-7xl mx-auto">
-            <span className="text-[#3b82f6] text-sm font-semibold uppercase tracking-widest">
-              Featured Interview
-            </span>
+      <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto">
+          <span className="text-[#3b82f6] text-sm font-semibold uppercase tracking-widest">
+            Featured Interview
+          </span>
 
+          {isLoading ? (
+            <div className="mt-8"><FeaturedInterviewSkeleton /></div>
+          ) : featuredInterview ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8 items-center">
               {/* Left - Visual */}
               <div className="relative">
@@ -218,9 +268,9 @@ const Interviews = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        </section>
-      )}
+          ) : null}
+        </div>
+      </section>
 
       {/* More Interviews Grid */}
       <section className="py-20 px-6 md:px-12 bg-white">
@@ -243,7 +293,9 @@ const Interviews = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regularInterviews.map((interview, index) => (
+            {isLoading ? (
+              [...Array(5)].map((_, i) => <InterviewSkeleton key={i} />)
+            ) : regularInterviews.map((interview, index) => (
               <div
                 key={interview.id}
                 className="group rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500"

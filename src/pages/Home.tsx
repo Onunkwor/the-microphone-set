@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import ArtistShowcase from "@/components/ui/artistShowcase";
 import { BoxReveal } from "@/components/ui/box-reveal";
 import { Button } from "@/components/ui/button";
@@ -7,15 +8,84 @@ import {
   Play,
   Mic,
   Music,
-  Sparkles,
+  Zap,
   ArrowRight,
   Volume2,
   Radio,
   Disc3,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { playlistsApi, type Playlist } from "@/services/api";
+import { CardSkeleton } from "@/components/ui/skeleton";
+
+interface FeaturedPlaylist {
+  id: string;
+  title: string;
+  description: string;
+  tracks: string;
+  duration: string;
+  genre: string;
+}
+
+const fallbackPlaylists: FeaturedPlaylist[] = [
+  {
+    id: "64LkgCfNbLqjclQYCTid8L",
+    title: "Late Night Vibes",
+    description: "Perfect for late night listening",
+    tracks: "24 tracks",
+    duration: "1hr 42min",
+    genre: "Chill",
+  },
+  {
+    id: "3NARoU8KzfUJZ6o4mWVIRV",
+    title: "Morning Coffee",
+    description: "Start your day right",
+    tracks: "18 tracks",
+    duration: "58min",
+    genre: "Acoustic",
+  },
+  {
+    id: "79WcTJuCulopfqul1awYJk",
+    title: "Deep Focus",
+    description: "Music for concentration",
+    tracks: "32 tracks",
+    duration: "2hr 15min",
+    genre: "Ambient",
+  },
+];
 
 const Home = () => {
+  const [featuredPlaylists, setFeaturedPlaylists] = useState<FeaturedPlaylist[]>(fallbackPlaylists);
+  const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(true);
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        const data = await playlistsApi.getAll();
+        if (data && data.length > 0) {
+          // Filter for featured playlists first, or take first 3
+          const featuredData = data.filter((item: Playlist) => item.featured).slice(0, 3);
+          const playlistsToShow = featuredData.length > 0 ? featuredData : data.slice(0, 3);
+          
+          const mapped: FeaturedPlaylist[] = playlistsToShow.map((item: Playlist) => ({
+            id: item.spotifyId,
+            title: item.title,
+            description: item.description || "Curated playlist",
+            tracks: "—",
+            duration: "—",
+            genre: item.genre || "Various",
+          }));
+          setFeaturedPlaylists(mapped);
+        }
+      } catch (error) {
+        console.error("Error fetching playlists, using fallback:", error);
+      } finally {
+        setIsLoadingPlaylists(false);
+      }
+    };
+
+    fetchPlaylists();
+  }, []);
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
       {/* Hero Section */}
@@ -259,7 +329,7 @@ const Home = () => {
       number: "02",
     },
     {
-      icon: Sparkles,
+      icon: Zap,
       title: "Smart Recommendations",
       description:
         "Discover new tracks tailored to your taste. Our intelligent system learns what resonates with you.",
@@ -349,26 +419,9 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                id: "64LkgCfNbLqjclQYCTid8L",
-                title: "Late Night Vibes",
-                tracks: "24 tracks",
-                duration: "1hr 42min",
-              },
-              {
-                id: "3NARoU8KzfUJZ6o4mWVIRV",
-                title: "Morning Coffee",
-                tracks: "18 tracks",
-                duration: "58min",
-              },
-              {
-                id: "79WcTJuCulopfqul1awYJk",
-                title: "Deep Focus",
-                tracks: "32 tracks",
-                duration: "2hr 15min",
-              },
-            ].map((playlist) => (
+            {isLoadingPlaylists ? (
+              [...Array(3)].map((_, i) => <CardSkeleton key={i} />)
+            ) : featuredPlaylists.map((playlist) => (
               <div
                 key={playlist.id}
                 className="group relative rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500"
@@ -389,14 +442,29 @@ const Home = () => {
 
                 {/* Info overlay */}
                 <div className="p-6 border-t border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">{playlist.title}</h3>
-                      <p className="text-gray-500 text-sm mt-1">
-                        {playlist.tracks} • {playlist.duration}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-bold text-gray-900 truncate">{playlist.title}</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                        {playlist.description}
                       </p>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span className="px-2 py-1 bg-[#3b82f6]/10 text-[#3b82f6] rounded-full font-medium">
+                          {playlist.genre}
+                        </span>
+                        <span>•</span>
+                        <span>{playlist.tracks}</span>
+                        {playlist.duration !== "—" && (
+                          <>
+                            <span>•</span>
+                            <span>{playlist.duration}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-[#3b82f6] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:scale-110 shadow-lg">
+                    <div className="w-10 h-10 rounded-full bg-[#3b82f6] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:scale-110 shadow-lg flex-shrink-0">
                       <Play className="w-4 h-4 text-white fill-current ml-0.5" />
                     </div>
                   </div>
@@ -526,7 +594,7 @@ const Home = () => {
               className="bg-white text-[#3b82f6] hover:bg-gray-100 rounded-full px-10 py-7 text-lg font-bold shadow-2xl hover:scale-105 transition-transform duration-300"
             >
               <Link to="/recommendations">
-                <Sparkles className="mr-2 h-5 w-5" />
+                <Zap className="mr-2 h-5 w-5" />
                 Get Started Free
               </Link>
             </Button>

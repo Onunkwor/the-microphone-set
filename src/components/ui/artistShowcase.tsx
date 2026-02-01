@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { artistsApi, type Artist as ArtistType } from "@/services/api";
 
 interface Artist {
   id: number;
@@ -9,7 +10,7 @@ interface Artist {
   bio: string;
 }
 
-const artists: Artist[] = [
+const fallbackArtists: Artist[] = [
   {
     id: 1,
     name: "Velvet Echo",
@@ -55,7 +56,29 @@ const artists: Artist[] = [
 ];
 
 const ArtistShowcase = () => {
+  const [artists, setArtists] = useState<Artist[]>(fallbackArtists);
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const data = await artistsApi.getAll();
+        if (data && data.length > 0) {
+          const mapped: Artist[] = data.map((item: ArtistType, index: number) => ({
+            id: index + 1,
+            name: item.name,
+            image: item.image,
+            bio: item.bio,
+          }));
+          setArtists(mapped);
+        }
+      } catch (error) {
+        console.log("Using fallback artists:", error);
+      }
+    };
+
+    fetchArtists();
+  }, []);
   const marqueeText = "oh you like music too?";
 
   const handleCardClick = (id: number) => {

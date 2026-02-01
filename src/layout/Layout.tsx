@@ -7,14 +7,32 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { Footer } from "@/components/ui/footer";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { Logo } from "@/components/Logo";
+import { triviaApi } from "@/services/api";
 
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasActiveTrivia, setHasActiveTrivia] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const checkActiveTrivia = async () => {
+      try {
+        const data = await triviaApi.getRandom(1);
+        setHasActiveTrivia(data && data.length > 0);
+      } catch {
+        setHasActiveTrivia(false);
+      }
+    };
+
+    if (location.pathname === "/") {
+      checkActiveTrivia();
+    }
+  }, [location.pathname]);
 
   const navItems = [
     {
@@ -40,7 +58,7 @@ const Layout = () => {
   ];
   return (
     <>
-      {location.pathname === "/" && (
+      {location.pathname === "/" && hasActiveTrivia && (
         <StickyBanner className="bg-gradient-to-b from-blue-500 to-blue-600">
           <p className="mx-0 max-w-[90%] text-white drop-shadow-md">
             🎤 Think you know lyrics? Prove it in our{" "}

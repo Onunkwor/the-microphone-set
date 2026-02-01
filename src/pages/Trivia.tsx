@@ -1,7 +1,67 @@
 import { useState, useEffect, useRef } from "react";
-import { Music, Share2, RotateCcw, Trophy, Copy, Facebook, ArrowRight } from "lucide-react";
+import { Share2, RotateCcw, Trophy, Copy, Facebook, ArrowRight, Loader2, Mic2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { triviaApi, type Trivia as TriviaType } from "@/services/api";
+
+interface Question {
+  question: string;
+  options: string[];
+  correct: number;
+}
+
+const fallbackQuestions: Question[] = [
+  {
+    question: "Which artist released the album 'Thriller' in 1982?",
+    options: ["Prince", "Michael Jackson", "Madonna", "Whitney Houston"],
+    correct: 1,
+  },
+  {
+    question: "What does 'BPM' stand for in music?",
+    options: [
+      "Bass Per Minute",
+      "Beats Per Minute",
+      "Band Performance Measure",
+      "Basic Playing Method",
+    ],
+    correct: 1,
+  },
+  {
+    question: "Which band wrote 'Bohemian Rhapsody'?",
+    options: ["Led Zeppelin", "The Beatles", "Queen", "Pink Floyd"],
+    correct: 2,
+  },
+  {
+    question: "What instrument did Jimi Hendrix famously play?",
+    options: ["Piano", "Drums", "Bass", "Guitar"],
+    correct: 3,
+  },
+  {
+    question: "Which city is considered the birthplace of jazz?",
+    options: ["Chicago", "New York", "New Orleans", "Memphis"],
+    correct: 2,
+  },
+  {
+    question: "What year was MTV launched?",
+    options: ["1979", "1981", "1983", "1985"],
+    correct: 1,
+  },
+  {
+    question: "Which artist has won the most Grammy Awards?",
+    options: ["Beyoncé", "Taylor Swift", "Adele", "Alison Krauss"],
+    correct: 0,
+  },
+  {
+    question: "What does 'LP' stand for in vinyl records?",
+    options: [
+      "Large Player",
+      "Long Playing",
+      "Limited Press",
+      "Live Performance",
+    ],
+    correct: 1,
+  },
+];
 
 const Trivia = () => {
   const [_, setCurrentQuestion] = useState(0);
@@ -11,60 +71,32 @@ const Trivia = () => {
   const [userName, setUserName] = useState("");
   const [showWelcome, setShowWelcome] = useState(true);
   const [visibleQuestion, setVisibleQuestion] = useState(0);
+  const [questions, setQuestions] = useState<Question[]>(fallbackQuestions);
+  const [isLoading, setIsLoading] = useState(true);
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  const questions = [
-    {
-      question: "Which artist released the album 'Thriller' in 1982?",
-      options: ["Prince", "Michael Jackson", "Madonna", "Whitney Houston"],
-      correct: 1,
-    },
-    {
-      question: "What does 'BPM' stand for in music?",
-      options: [
-        "Bass Per Minute",
-        "Beats Per Minute",
-        "Band Performance Measure",
-        "Basic Playing Method",
-      ],
-      correct: 1,
-    },
-    {
-      question: "Which band wrote 'Bohemian Rhapsody'?",
-      options: ["Led Zeppelin", "The Beatles", "Queen", "Pink Floyd"],
-      correct: 2,
-    },
-    {
-      question: "What instrument did Jimi Hendrix famously play?",
-      options: ["Piano", "Drums", "Bass", "Guitar"],
-      correct: 3,
-    },
-    {
-      question: "Which city is considered the birthplace of jazz?",
-      options: ["Chicago", "New York", "New Orleans", "Memphis"],
-      correct: 2,
-    },
-    {
-      question: "What year was MTV launched?",
-      options: ["1979", "1981", "1983", "1985"],
-      correct: 1,
-    },
-    {
-      question: "Which artist has won the most Grammy Awards?",
-      options: ["Beyoncé", "Taylor Swift", "Adele", "Alison Krauss"],
-      correct: 0,
-    },
-    {
-      question: "What does 'LP' stand for in vinyl records?",
-      options: [
-        "Large Player",
-        "Long Playing",
-        "Limited Press",
-        "Live Performance",
-      ],
-      correct: 1,
-    },
-  ];
+  // Fetch questions from API with fallback
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const data = await triviaApi.getRandom(8);
+        if (data && data.length > 0) {
+          const mappedQuestions: Question[] = data.map((item: TriviaType) => ({
+            question: item.question,
+            options: item.options,
+            correct: item.correctAnswer,
+          }));
+          setQuestions(mappedQuestions);
+        }
+      } catch (error) {
+        console.log("Using fallback questions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
 
   const getSnarkyComment = (percentage: number) => {
     if (percentage === 100)
@@ -178,7 +210,7 @@ const Trivia = () => {
           <div className="max-w-2xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
-                <Music className="w-4 h-4 text-[#3b82f6]" />
+                <Mic2 className="w-4 h-4 text-[#3b82f6]" />
                 <span className="text-sm text-gray-600 font-medium">The Microphone Set</span>
               </div>
             </div>
@@ -269,6 +301,18 @@ const Trivia = () => {
     );
   }
 
+  // Loading Screen
+  if (isLoading) {
+    return (
+      <div className="bg-white text-gray-900 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-[#3b82f6] animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 font-medium">Loading trivia questions...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Quiz Screen
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
@@ -281,7 +325,7 @@ const Trivia = () => {
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
-              <Music className="w-4 h-4 text-[#3b82f6]" />
+              <Mic2 className="w-4 h-4 text-[#3b82f6]" />
               <span className="text-sm text-gray-600 font-medium tracking-wide uppercase">
                 Test Your Knowledge
               </span>

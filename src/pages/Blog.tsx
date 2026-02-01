@@ -1,8 +1,23 @@
+import { useState, useEffect } from "react";
 import { BookOpen, Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { blogsApi, type Blog as BlogType } from "@/services/api";
+import { ArticleSkeleton } from "@/components/ui/skeleton";
 
-const Blog = () => {
- const articles = [
+interface Article {
+  id: number;
+  title: string;
+  excerpt: string;
+  category: string;
+  author: string;
+  date: string;
+  readTime: string;
+  image: string;
+  url: string;
+  featured: boolean;
+}
+
+const fallbackArticles: Article[] = [
   {
     id: 1,
     title: "The 'Philip Uzo and The Electric Revival' Live Show",
@@ -215,7 +230,38 @@ const Blog = () => {
   },
 ];
 
-  const regularArticles = articles;
+const Blog = () => {
+  const [articles, setArticles] = useState<Article[]>(fallbackArticles);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const data = await blogsApi.getAll();
+        if (data && data.length > 0) {
+          const mapped: Article[] = data.map((item: BlogType, index: number) => ({
+            id: index + 1,
+            title: item.title,
+            excerpt: item.excerpt,
+            category: item.category,
+            author: item.author,
+            date: item.createdAt || new Date().toISOString(),
+            readTime: "5 min read",
+            image: item.image,
+            url: item.externalUrl,
+            featured: item.featured,
+          }));
+          setArticles(mapped);
+        }
+      } catch (error) {
+        console.log("Using fallback articles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
@@ -264,7 +310,9 @@ const Blog = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regularArticles.map((article, index) => (
+            {isLoading ? (
+              [...Array(6)].map((_, i) => <ArticleSkeleton key={i} />)
+            ) : articles.map((article, index) => (
               <a
                 key={article.id}
                 href={article.url}

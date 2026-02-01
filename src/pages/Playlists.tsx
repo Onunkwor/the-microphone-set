@@ -1,58 +1,98 @@
+import { useState, useEffect } from "react";
 import { Headphones, ExternalLink, Clock, Music, Play, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { playlistsApi, type Playlist } from "@/services/api";
+import { CardSkeleton } from "@/components/ui/skeleton";
+
+interface PlaylistDisplay {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  tracks: number;
+  type: "album" | "playlist";
+}
+
+const fallbackPlaylists: PlaylistDisplay[] = [
+  {
+    id: "64LkgCfNbLqjclQYCTid8L",
+    title: "Chill Vibes",
+    description: "Perfect for studying, working, or just relaxing",
+    duration: "2h 34m",
+    tracks: 42,
+    type: "album",
+  },
+  {
+    id: "3NARoU8KzfUJZ6o4mWVIRV",
+    title: "Energy Boost",
+    description: "Get pumped up with these high-energy tracks",
+    duration: "1h 52m",
+    tracks: 28,
+    type: "album",
+  },
+  {
+    id: "79WcTJuCulopfqul1awYJk",
+    title: "Late Night Sessions",
+    description: "Smooth tracks for those midnight hours",
+    duration: "3h 12m",
+    tracks: 54,
+    type: "album",
+  },
+  {
+    id: "37i9dQZF1DXcBWIGoYBM5M",
+    title: "Today's Top Hits",
+    description: "The hottest tracks right now",
+    duration: "2h 18m",
+    tracks: 50,
+    type: "playlist",
+  },
+  {
+    id: "37i9dQZF1DX0XUsuxWHRQd",
+    title: "RapCaviar",
+    description: "New music from Lil Baby, Lil Durk, and more",
+    duration: "2h 45m",
+    tracks: 55,
+    type: "playlist",
+  },
+  {
+    id: "37i9dQZF1DX4dyzvuaRJ0n",
+    title: "mint",
+    description: "The freshest music, first",
+    duration: "1h 30m",
+    tracks: 30,
+    type: "playlist",
+  },
+];
 
 const Playlists = () => {
-  const playlists = [
-    {
-      id: "64LkgCfNbLqjclQYCTid8L",
-      title: "Chill Vibes",
-      description: "Perfect for studying, working, or just relaxing",
-      duration: "2h 34m",
-      tracks: 42,
-      type: "album",
-    },
-    {
-      id: "3NARoU8KzfUJZ6o4mWVIRV",
-      title: "Energy Boost",
-      description: "Get pumped up with these high-energy tracks",
-      duration: "1h 52m",
-      tracks: 28,
-      type: "album",
-    },
-    {
-      id: "79WcTJuCulopfqul1awYJk",
-      title: "Late Night Sessions",
-      description: "Smooth tracks for those midnight hours",
-      duration: "3h 12m",
-      tracks: 54,
-      type: "album",
-    },
-    {
-      id: "37i9dQZF1DXcBWIGoYBM5M",
-      title: "Today's Top Hits",
-      description: "The hottest tracks right now",
-      duration: "2h 18m",
-      tracks: 50,
-      type: "playlist",
-    },
-    {
-      id: "37i9dQZF1DX0XUsuxWHRQd",
-      title: "RapCaviar",
-      description: "New music from Lil Baby, Lil Durk, and more",
-      duration: "2h 45m",
-      tracks: 55,
-      type: "playlist",
-    },
-    {
-      id: "37i9dQZF1DX4dyzvuaRJ0n",
-      title: "mint",
-      description: "The freshest music, first",
-      duration: "1h 30m",
-      tracks: 30,
-      type: "playlist",
-    },
-  ];
+  const [playlists, setPlaylists] = useState<PlaylistDisplay[]>(fallbackPlaylists);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        const data = await playlistsApi.getAll();
+        if (data && data.length > 0) {
+          const mapped: PlaylistDisplay[] = data.map((item: Playlist) => ({
+            id: item.spotifyId,
+            title: item.title,
+            description: item.description,
+            duration: "—",
+            tracks: 0,
+            type: "playlist" as const,
+          }));
+          setPlaylists(mapped);
+        }
+      } catch (error) {
+        console.log("Using fallback playlists:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlaylists();
+  }, []);
 
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
@@ -107,7 +147,9 @@ const Playlists = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {playlists.map((playlist, index) => (
+            {isLoading ? (
+              [...Array(6)].map((_, i) => <CardSkeleton key={i} />)
+            ) : playlists.map((playlist, index) => (
               <div
                 key={playlist.id}
                 className="group rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#3b82f6]/30 transition-all duration-500"
@@ -175,6 +217,14 @@ const Playlists = () => {
           </div>
         </div>
       </section>
+
+      {/* Shimmer animation */}
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
 
       {/* CTA Section */}
       <section className="py-32 px-6 md:px-12 relative overflow-hidden bg-[#3b82f6]">
