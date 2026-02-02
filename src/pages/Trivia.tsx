@@ -72,13 +72,22 @@ const Trivia = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [userName, setUserName] = useState("");
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [nameInput, setNameInput] = useState("");
+  const [showNamePrompt, setShowNamePrompt] = useState(true);
   const [visibleQuestion, setVisibleQuestion] = useState(0);
   const [questions, setQuestions] = useState<TriviaType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sessionId] = useState(() => `${Date.now()}-${Math.random().toString(36).substring(2)}`);
   const [userRanking, setUserRanking] = useState<number>();
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  // Load saved name from localStorage on mount
+  useEffect(() => {
+    const savedName = localStorage.getItem('trivia_user_name');
+    if (savedName) {
+      setNameInput(savedName);
+    }
+  }, []);
 
   // Fetch questions from API with fallback
   useEffect(() => {
@@ -123,22 +132,119 @@ const Trivia = () => {
     fetchQuestions();
   }, []);
 
-  const getSnarkyComment = (percentage: number) => {
-    if (percentage === 100)
-      return "Perfect score! You're basically a walking music encyclopedia.";
-    if (percentage >= 87.5)
-      return "Excellent! Your music knowledge is seriously impressive.";
-    if (percentage >= 75)
-      return "Pretty good! You clearly know your music history.";
-    if (percentage >= 62.5)
-      return "Not bad, but there's room for improvement in your music knowledge.";
-    if (percentage >= 50)
-      return "Average performance. Time to expand those musical horizons?";
-    if (percentage >= 37.5)
-      return "Below average. Maybe stick to your favorite genre for now.";
-    if (percentage >= 25)
-      return "Rough results. Consider this a learning opportunity.";
-    return "Yikes. Did you guess randomly? Time for a serious music education.";
+const getSnarkyComment = (percentage: number) => {
+    const pickRandom = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+
+    if (percentage === 100) {
+      return pickRandom([
+        "No cap, you absolutely ATE and left NO crumbs. It's giving musical genius with a PhD.",
+        "Okay but this is lowkey unhinged?? You really said 'watch me be perfect' and DID THAT. Main character for real.",
+        "It's giving 'I was born in a recording studio' energy. Highkey obsessed with this serve.",
+        "Bestie you really thought you'd flex on us like this? And you DID?? Absolutely unhinged behavior, we stan.",
+        "You're literally the blueprint. The moment. The icon. No notes, just pure perfection fr fr.",
+        "Highkey terrifying how you ate every single question. Are you even real or just a music theory textbook with feelings?",
+        "It's giving 'I have Spotify Premium and a music degree' vibes. Immaculate, no notes, chef's kiss.",
+        "Lowkey scared of you now. You just violated this quiz in broad daylight. Absolutely feral excellence.",
+        "No cap, you just gaslit the entire quiz into being easy. Delusional confidence that actually delivered.",
+        "This is main character energy but make it TERRIFYING. You really understood every assignment and then some.",
+      ]);
+    }
+    if (percentage >= 87.5) {
+      return pickRandom([
+        "Lowkey obsessed with how close you got. Highkey mad you fumbled at the finish line though bestie.",
+        "It's giving 'almost perfect but still human' vibes. We see the vision, just squint a lil.",
+        "You're so close to greatness it's actually unhinged. Like why stop NOW?? Main character who tripped at the end.",
+        "No cap, you cooked but left the kitchen slightly messy. Still ate though, we're not gonna lie.",
+        "This is giving 'I could've been perfect but chose chaos' energy. Honestly? Iconic behavior.",
+        "Bestie you really said 'perfection is mid' and almost proved it wrong. So close it HURTS.",
+        "Highkey impressed, lowkey devastated you missed ANY. The duality is unhinged.",
+        "It's giving valedictorian energy with one B+ that haunts you forever. We get it.",
+        "You're like 98% that witch but 2% just... forgot the spell? Still magical though bestie.",
+        "No cap, this score is absolutely bussin' with just a HINT of delusion. Almost there legend.",
+      ]);
+    }
+    if (percentage >= 75) {
+      return pickRandom([
+        "Solid but not spectacular, bestie. It's giving 'I know enough to be dangerous but not deadly.'",
+        "Lowkey slayed, highkey could've tried harder. But you're comfortable with mediocrity and that's... a choice.",
+        "You understood most of the assignment but definitely skipped the reading. B+ energy for real.",
+        "It's giving 'I listen to music but don't STUDY it' vibes. Casual fan behavior, we see you.",
+        "This is giving 'good enough' mentality. Not the serve, not the flop, just... there. Mid-tier icon.",
+        "Bestie you ate most of it but left some CHUNKS on the plate. A little concerning ngl.",
+        "Lowkey proud, highkey know you didn't try your hardest. Growth mindset or nah?",
+        "Main character who skipped episodes 3, 7, and 11 but somehow followed the plot. Respect.",
+        "It's giving 'I have a playlist but it's 30 songs on repeat.' Limited but confident.",
+        "No cap, this is respectable but forgettable. You're in the group chat but not the main thread.",
+      ]);
+    }
+    if (percentage >= 62.5) {
+      return pickRandom([
+        "It's giving... you TRIED and that's the kindest thing we can say rn. Participation trophy loaded.",
+        "You thought you ate but bestie you barely TASTED. Main character delusion without the plot armor.",
+        "Highkey expected better but we're being nice because you look fragile. This is mid with a capital MID.",
+        "Not the serve you thought it was, but at least you showed up? The bar is on the FLOOR.",
+        "Bestie this is giving 'I hit shuffle and pray' energy. Strategic guessing is NOT a personality trait.",
+        "Lowkey embarrassing but we're manifesting growth for you. Thoughts and prayers fr.",
+        "It's giving 'I recognize the chorus but that's IT' vibes. Surface level understanding only.",
+        "You're the side character who THINKS they're the lead. The delusion is almost impressive bestie.",
+        "No cap, you passed by a THREAD. It's giving 'phew I barely survived that' panic energy.",
+        "Highkey need you to lock in and study. This is your wake-up call, are you AWAKE??",
+      ]);
+    }
+    if (percentage >= 50) {
+      return pickRandom([
+        "Bestie... this is the DEFINITION of mid. Like textbook mediocrity, frame it and put it in a museum.",
+        "You said 'I'll guess half' and actually DID. The audacity is unhinged but not in a good way.",
+        "Lowkey tragic, highkey expected from someone with your energy. It's giving 'music is just noise.'",
+        "Main character?? More like blurry background extra who doesn't even get a name. Humble yourself.",
+        "It's giving 'I know vibes but ZERO facts' energy. Vibes don't count as knowledge, sorry.",
+        "You're literally standing at the crossroads of knowing and being clueless. Pick a lane bestie.",
+        "No cap, this is bare minimum effort. We're not mad, just disappointed. Actually we're a little mad.",
+        "Highkey mediocre, lowkey sad to witness. Most people live here and that's the problem fr.",
+        "It's giving 'I've HEARD of music' but never listened properly. Not the flex, please sit down.",
+        "You really said 'coin flip odds' and lived that truth. Chaotic but make it EMBARRASSING.",
+      ]);
+    }
+    if (percentage >= 37.5) {
+      return pickRandom([
+        "Oh no bestie... this is HIGHKEY embarrassing. It's giving 'what is music?' energy. Please.",
+        "You flopped HARD and we're gonna dwell actually. Time to delete your Spotify and start over.",
+        "It's giving 'I only know songs from TikTok ads' vibes. Unhinged ignorance fr fr.",
+        "You really said 'music is just background noise' and PROVED it. The worst kind of correct.",
+        "This is giving 'I heard a song once in 2019' energy. Bestie WHERE have you BEEN??",
+        "Your music knowledge ghosted you. Actually it was never there to begin with, let's be honest.",
+        "Lowkey terrified about your aux privileges. They're REVOKED, effective immediately bestie.",
+        "No cap, this is giving 'I thought Beethoven was JUST a dog movie.' Help is available.",
+        "It's giving NPC who stands in the corner with NO dialogue. Zero awareness, zero braincells.",
+        "You're the person asking 'who's this?' every 10 seconds. We KNOW you are, it's obvious.",
+      ]);
+    }
+    if (percentage >= 25) {
+      return pickRandom([
+        "OOF. It's giving 'I've never seen headphones in real life.' Lowkey devastating to witness.",
+        "Bestie this is unhinged in the WORST way possible. Did you even TRY or just click random??",
+        "No cap, this is a full-blown CRISIS. Your music knowledge needs life support STAT.",
+        "Highkey concerning fr. It's giving 'raised by silent wolves in a basement' vibes. GET HELP.",
+        "This is giving 'all songs sound identical to me' energy. That's... not normal bestie.",
+        "You're the reason artists consider quitting. This score is VIOLENCE against music itself.",
+        "Lowkey wanna make you a playlist. Highkey wanna send you to PRISON for this crime.",
+        "It's giving 'I wear earbuds but never press play' behavior. WHAT are you even DOING??",
+        "No cap, this is the villain origin story for every music teacher. You're the trauma.",
+        "Bestie you didn't miss the mark, you're in a different DIMENSION. How did you get here?",
+      ]);
+    }
+    return pickRandom([
+      "HELP?? This is genuinely UNHINGED. Did you literally close your eyes, spin around, and tap randomly??",
+      "Bestie... no cap, this might be the worst thing humanity has produced. It's giving NOTHING and I mean it.",
+      "Lowkey calling the authorities rn. Highkey worried about your SAFETY. This is a musical CRIME SCENE.",
+      "It's giving 'I thought music was invented yesterday' vibes. Touch grass, touch an album, touch SOMETHING.",
+      "Main character energy?? You don't even get ELEVATOR music in your scenes. You're in silent film territory.",
+      "This is giving 'I've never experienced joy from sound' behavior. Seek therapy AND a Spotify account IMMEDIATELY.",
+      "No cap, you broke the quiz in the WORST way. Like illegally bad. The FBI should be involved.",
+      "Bestie this score is a FELONY in 49 states. Highkey criminal behavior that cannot be forgiven.",
+      "It's giving 'I thought Beyoncé was a CITY' energy. Please stop existing near music, PLEASE.",
+      "You really asked 'what IS music?' and weren't joking. Unhinged doesn't cover this level of chaos.",
+    ]);
   };
 
   useEffect(() => {
@@ -158,12 +264,12 @@ const Trivia = () => {
       });
     };
 
-    if (!isComplete) {
+    if (!isComplete && !showNamePrompt) {
       window.addEventListener("scroll", handleScroll);
       handleScroll();
       return () => window.removeEventListener("scroll", handleScroll);
     }
-  }, [showWelcome, isComplete]);
+  }, [showNamePrompt, isComplete]);
 
   const handleAnswerSelect = (questionIndex: number, answerIndex: number) => {
     setSelectedAnswers((prev) => ({
@@ -173,11 +279,6 @@ const Trivia = () => {
   };
 
   const handleSubmit = async () => {
-    if (!userName.trim()) {
-      alert("Please enter your name before submitting!");
-      return;
-    }
-
     // Calculate score client-side for immediate feedback
     let finalScore = 0;
     questions.forEach((question, index) => {
@@ -210,13 +311,20 @@ const Trivia = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleNameConfirm = () => {
+    if (!nameInput.trim()) return;
+    const trimmedName = nameInput.trim();
+    setUserName(trimmedName);
+    localStorage.setItem('trivia_user_name', trimmedName);
+    setShowNamePrompt(false);
+  };
+
   const resetQuiz = () => {
     setCurrentQuestion(0);
     setScore(0);
     setSelectedAnswers({});
     setIsComplete(false);
-    setShowWelcome(true);
-    setUserName("");
+    setShowNamePrompt(true);
     setVisibleQuestion(0);
     window.scrollTo(0, 0);
   };
@@ -376,6 +484,73 @@ const Trivia = () => {
     );
   }
 
+  // Name Prompt Screen - shown before trivia starts
+  if (showNamePrompt) {
+    return (
+      <div className="bg-white text-gray-900 min-h-screen flex items-center justify-center px-6">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
+              <Mic2 className="w-4 h-4 text-[#3b82f6]" />
+              <span className="text-sm text-gray-600 font-medium tracking-wide uppercase">
+                Music Trivia
+              </span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+              Ready to Test Your
+              <br />
+              <span className="text-[#3b82f6]">Music Knowledge?</span>
+            </h1>
+
+            <p className="text-gray-600">
+              Answer {questions.length} questions and compete for a spot on the leaderboard!
+            </p>
+          </div>
+
+          <div className="p-8 rounded-2xl bg-white border border-gray-200 shadow-lg">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              {localStorage.getItem('trivia_user_name') ? 'Welcome back!' : 'Enter Your Name'}
+            </h3>
+            <p className="text-gray-500 text-sm mb-4">
+              {localStorage.getItem('trivia_user_name')
+                ? 'Confirm your name or enter a new one to continue.'
+                : 'Your name will appear on the leaderboard.'}
+            </p>
+
+            <input
+              type="text"
+              placeholder="Your name"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-[#3b82f6] outline-none transition-colors mb-4"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleNameConfirm();
+                }
+              }}
+              maxLength={50}
+              autoFocus
+            />
+
+            <Button
+              onClick={handleNameConfirm}
+              disabled={!nameInput.trim()}
+              size="lg"
+              className={`w-full rounded-full py-6 font-bold transition-all duration-300 ${
+                nameInput.trim()
+                  ? "bg-[#3b82f6] text-white hover:bg-[#2563eb] hover:shadow-[0_8px_30px_#3b82f640]"
+                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Start Trivia
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Quiz Screen
   return (
     <div className="bg-white text-gray-900 overflow-hidden">
@@ -390,7 +565,7 @@ const Trivia = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
               <Mic2 className="w-4 h-4 text-[#3b82f6]" />
               <span className="text-sm text-gray-600 font-medium tracking-wide uppercase">
-                Test Your Knowledge
+                Playing as {userName}
               </span>
             </div>
 
@@ -420,35 +595,6 @@ const Trivia = () => {
           </div>
         </div>
       </section>
-
-      {/* Name Input (if not provided) */}
-      {!userName && (
-        <section className="py-8 px-6 md:px-12">
-          <div className="max-w-md mx-auto p-8 rounded-2xl bg-white border border-gray-200 shadow-lg">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Enter Your Name</h3>
-            <p className="text-gray-600 mb-4">
-              Your name will be displayed on the leaderboard if you make it to the top!
-            </p>
-            <input
-              type="text"
-              placeholder="Your name"
-              className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-[#3b82f6] outline-none transition-colors"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                  setUserName(e.currentTarget.value.trim());
-                }
-              }}
-              onBlur={(e) => {
-                if (e.currentTarget.value.trim()) {
-                  setUserName(e.currentTarget.value.trim());
-                }
-              }}
-              maxLength={50}
-              autoFocus
-            />
-          </div>
-        </section>
-      )}
 
       {/* Questions */}
       <section className="py-8 px-6 md:px-12">

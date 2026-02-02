@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Trophy,
-  Medal,
   Crown,
   Calendar,
   Target,
@@ -96,112 +95,67 @@ const Leaderboard = () => {
     }
   };
 
+  // Calculate progress percentage relative to top score
+  const getProgressWidth = (percentage: number, topPercentage: number) => {
+    return Math.round((percentage / topPercentage) * 100);
+  };
+
+  const topScore = leaderboard[0]?.percentage || 100;
+
   return (
     <div className="bg-white text-gray-900 overflow-hidden min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-28 px-6 md:px-12 overflow-hidden">
-        {/* Animated background grid */}
-        <div className="absolute inset-0 z-0 opacity-30">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-                linear-gradient(to right, #3b82f6 1px, transparent 1px),
-                linear-gradient(to bottom, #3b82f6 1px, transparent 1px)
-              `,
-              backgroundSize: '60px 60px',
-              opacity: 0.03
-            }}
-          />
-          <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-[#3b82f6]/8 rounded-full blur-[180px] animate-pulse" style={{ animationDuration: '4s' }} />
-          <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-blue-400/6 rounded-full blur-[160px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+      <section className="relative py-16 lg:py-24 px-6 md:px-12 overflow-hidden">
+        {/* Subtle background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#3b82f6]/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#8b5cf6]/5 rounded-full blur-[100px]" />
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-[#3b82f6]/10 via-blue-500/10 to-[#3b82f6]/10 border border-[#3b82f6]/20 shadow-lg shadow-[#3b82f6]/5 mb-8"
-            >
-              <div className="relative">
-                <Trophy className="w-5 h-5 text-[#3b82f6]" />
-                <motion.div
-                  className="absolute -inset-1 bg-[#3b82f6]/20 rounded-full blur-sm"
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </div>
-              <span className="text-sm text-[#3b82f6] font-bold tracking-wider uppercase">
-                Global Rankings
-              </span>
-            </motion.div>
-
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
+          <div className="mb-12">
+            <motion.h1
+              initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
+              transition={{ duration: 0.5 }}
+              className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-gray-900 mb-3"
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-none text-gray-900 mb-4 sm:mb-6 tracking-tight">
-                <span className="inline-block" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Hall of
-                </span>
-                <br />
-                <span className="relative inline-block">
-                  <span className="relative z-10 bg-gradient-to-r from-[#3b82f6] via-blue-600 to-[#3b82f6] bg-clip-text text-transparent" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    Fame
-                  </span>
-                  <motion.div
-                    className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-3 sm:h-4 bg-[#3b82f6]/10 -rotate-1"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                  />
-                </span>
-              </h1>
-            </motion.div>
-
+              Top Players
+            </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light px-4"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-lg text-gray-500 font-light"
             >
-              Where music masters compete and legends are born
+              Music trivia champions this month
             </motion.p>
           </div>
 
-          {/* Stats */}
+          {/* Stats Row */}
           {stats && (
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto px-4"
+              transition={{ delay: 0.3 }}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl"
             >
               {[
-                { icon: TrendingUp, value: stats.totalQuizzes.toLocaleString(), label: "Total Quizzes", color: "from-blue-500 to-[#3b82f6]" },
-                { icon: Target, value: `${Math.round(stats.averagePercentage)}%`, label: "Average Score", color: "from-[#3b82f6] to-blue-600" },
-                { icon: Award, value: `${stats.topScore?.percentage || 0}%`, label: "Top Score", color: "from-blue-600 to-blue-700" }
+                { icon: TrendingUp, value: stats.totalQuizzes.toLocaleString(), label: "Total Quizzes" },
+                { icon: Target, value: `${Math.round(stats.averagePercentage)}%`, label: "Average Score" },
+                { icon: Award, value: `${stats.topScore?.percentage || 0}%`, label: "Top Score" }
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
-                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.6 + index * 0.1, type: "spring", bounce: 0.3 }}
-                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                  className="group relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + index * 0.1 }}
+                  className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#3b82f6]/20 to-blue-600/20 rounded-2xl sm:rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
-                  <div className="relative p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl bg-white border-2 border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-[#3b82f6]/5 to-transparent rounded-full -mr-12 sm:-mr-16 -mt-12 sm:-mt-16" />
-                    <stat.icon className="w-10 h-10 sm:w-12 sm:h-12 text-[#3b82f6] mb-4 sm:mb-6 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                    <p className={`text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-br ${stat.color} bg-clip-text text-transparent mb-2 sm:mb-3`}>
-                      {stat.value}
-                    </p>
-                    <p className="text-xs sm:text-sm text-gray-500 font-semibold uppercase tracking-wider">{stat.label}</p>
+                  <stat.icon className="w-8 h-8 text-[#3b82f6]" />
+                  <div>
+                    <p className="text-2xl font-black text-gray-900">{stat.value}</p>
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{stat.label}</p>
                   </div>
                 </motion.div>
               ))}
@@ -301,365 +255,136 @@ const Leaderboard = () => {
             </div>
           ) : (
             <>
-              {/* Top 3 Podium */}
+              {/* Top 3 Cards */}
               {offset === limit && leaderboard.length > 0 && (
-                <div className="mb-20">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-center mb-16"
-                  >
-                    <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 border-2 border-amber-200/50 shadow-xl shadow-amber-500/10">
-                      <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                      <span className="text-base font-black text-amber-700 tracking-wide">Champions Podium</span>
-                      <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                    </div>
-                  </motion.div>
+                <div className="mb-16">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    {leaderboard.slice(0, 3).map((entry, index) => {
+                      const rank = index + 1;
+                      const isFirst = rank === 1;
 
-                  {/* Podium with actual heights */}
-                  <div className="max-w-5xl mx-auto px-4">
-                    {/* Mobile: Vertical stack */}
-                    <div className="md:hidden space-y-4 mb-8">
-                      {leaderboard.slice(0, 3).map((entry, index) => {
-                        const displayIndex = index;
-                        const rank = index + 1;
+                      return (
+                        <motion.div
+                          key={entry._id}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className={`relative bg-white rounded-2xl p-6 sm:p-8 border-2 border-gray-100 shadow-lg overflow-hidden ${isFirst ? 'md:order-first' : ''}`}
+                        >
 
-                        const colors: {
-                          1: { bg: string; text: string; border: string; icon: typeof Crown };
-                          2: { bg: string; text: string; border: string; icon: typeof Medal };
-                          3: { bg: string; text: string; border: string; icon: typeof Medal };
-                        } = {
-                          1: { bg: 'from-amber-400 via-yellow-400 to-amber-500', text: 'text-amber-900', border: 'border-amber-300', icon: Crown },
-                          2: { bg: 'from-slate-300 via-gray-300 to-slate-400', text: 'text-slate-800', border: 'border-slate-300', icon: Medal },
-                          3: { bg: 'from-orange-400 via-amber-600 to-orange-500', text: 'text-orange-900', border: 'border-orange-400', icon: Medal }
-                        };
-
-                        const Icon = colors[rank as 1 | 2 | 3].icon;
-                        const colorSet = colors[rank as 1 | 2 | 3];
-
-                        return (
-                          <motion.div
-                            key={entry._id}
-                            initial={{ opacity: 0, x: -50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5, delay: displayIndex * 0.1 }}
-                            className="relative"
-                          >
-                            <div className={`p-6 rounded-2xl bg-gradient-to-r ${colorSet.bg} border-2 ${colorSet.border} shadow-xl`}>
-                              <div className="flex items-center gap-4">
-                                {/* Medal/Crown */}
-                                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center border-2 border-white/50">
-                                  <Icon className={`w-8 h-8 ${colorSet.text}`} />
-                                </div>
-
-                                {/* User info */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className={`text-2xl font-black ${colorSet.text}`}>#{rank}</span>
-                                    <h3 className={`text-lg font-black ${colorSet.text} truncate`}>
-                                      {entry.userName}
-                                    </h3>
-                                  </div>
-                                  <p className={`text-sm font-bold ${colorSet.text} opacity-80`}>
-                                    {entry.score}/{entry.totalQuestions} correct
-                                  </p>
-                                </div>
-
-                                {/* Score */}
-                                <div className="flex-shrink-0 text-right">
-                                  <div className={`text-4xl font-black ${colorSet.text} drop-shadow-md`}>
-                                    {entry.percentage}%
-                                  </div>
-                                </div>
+                          {/* Rank badge */}
+                          <div className="flex items-center gap-2 mb-6">
+                            {rank === 1 ? (
+                              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-200">
+                                <Crown className="w-4 h-4 text-amber-600" />
+                                <span className="text-sm font-bold text-amber-700">#1 CHAMPION</span>
                               </div>
+                            ) : (
+                              <span className="text-sm font-semibold text-gray-400 tracking-wide">#{rank}</span>
+                            )}
+                          </div>
+
+                          {/* Player name */}
+                          <h3 className="text-xl sm:text-2xl font-black text-gray-900 mb-2 truncate">
+                            {entry.userName}
+                          </h3>
+
+                          {/* Score */}
+                          <div className="text-3xl sm:text-4xl font-light text-[#3b82f6] mb-6">
+                            {entry.percentage}%
+                          </div>
+
+                          {/* Metrics */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-gray-50 rounded-lg p-3">
+                              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Correct</p>
+                              <p className="text-lg font-semibold text-gray-900">{entry.score}/{entry.totalQuestions}</p>
                             </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Desktop: Podium */}
-                    <div className="hidden md:flex items-end justify-center gap-4 lg:gap-6 mb-8">
-                      {/* Reorder: 2nd, 1st, 3rd for podium effect */}
-                      {leaderboard.length >= 3 ? (
-                        [1, 0, 2].map((index, displayIndex) => {
-                          const entry = leaderboard[index];
-                          if (!entry) return null;
-                          const rank = index + 1;
-
-                        const heights = {
-                          1: 'h-72 lg:h-96',
-                          2: 'h-60 lg:h-80',
-                          3: 'h-52 lg:h-72'
-                        };
-
-                        const colors = {
-                          1: { bg: 'from-amber-400 via-yellow-400 to-amber-500', text: 'text-amber-900', border: 'border-amber-300' },
-                          2: { bg: 'from-slate-300 via-gray-300 to-slate-400', text: 'text-slate-800', border: 'border-slate-300' },
-                          3: { bg: 'from-orange-400 via-amber-600 to-orange-500', text: 'text-orange-900', border: 'border-orange-400' }
-                        };
-                        
-                        const heightClass = heights[rank as 1 | 2 | 3];
-                        const colorSet = colors[rank as 1 | 2 | 3];
-
-                        return (
-                          <motion.div
-                            key={entry._id}
-                            initial={{ opacity: 0, y: 100 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.8,
-                              delay: 0.3 + displayIndex * 0.15,
-                              type: "spring",
-                              bounce: 0.4
-                            }}
-                            whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                            className="flex-1 group cursor-pointer max-w-xs"
-                          >
-                            <div className="relative">
-                              {/* Trophy/Medal Icon */}
-                              <motion.div
-                                initial={{ scale: 0, rotate: -180 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{ delay: 0.6 + displayIndex * 0.15, type: "spring", bounce: 0.6 }}
-                                className="absolute -top-8 lg:-top-12 left-1/2 -translate-x-1/2 z-20"
-                              >
-                                <div className={`w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br ${colorSet.bg} flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-125 transition-transform duration-300`}>
-                                  {rank === 1 && <Crown className="w-6 h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />}
-                                  {rank === 2 && <Medal className="w-6 h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />}
-                                  {rank === 3 && <Medal className="w-6 h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />}
-                                </div>
-                              </motion.div>
-
-                              {/* Podium */}
-                              <div className={`relative ${heightClass} rounded-t-3xl bg-gradient-to-b ${colorSet.bg} border-4 ${colorSet.border} border-b-0 shadow-2xl overflow-hidden group-hover:shadow-3xl transition-all duration-300`}>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent" />
-                                <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black/10 to-transparent" />
-
-                                {/* Rank number */}
-                                <div className="absolute top-4 lg:top-6 inset-x-0 flex justify-center">
-                                  <div className={`text-5xl lg:text-8xl font-black ${colorSet.text} opacity-20 group-hover:opacity-30 transition-opacity`}>
-                                    {rank}
-                                  </div>
-                                </div>
-
-                                {/* User info */}
-                                <div className="absolute bottom-0 inset-x-0 p-4 lg:p-6 text-center">
-                                  <h3 className={`text-base lg:text-xl font-black ${colorSet.text} mb-1 lg:mb-2 truncate drop-shadow-sm`}>
-                                    {entry.userName}
-                                  </h3>
-                                  <div className={`text-2xl lg:text-4xl font-black ${colorSet.text} mb-1 drop-shadow-md`}>
-                                    {entry.percentage}%
-                                  </div>
-                                  <p className={`text-xs lg:text-sm font-bold ${colorSet.text} opacity-80`}>
-                                    {entry.score}/{entry.totalQuestions} correct
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* Podium base */}
-                              <div className={`h-3 lg:h-4 bg-gradient-to-b ${colorSet.bg} border-4 border-t-0 ${colorSet.border} rounded-b-lg shadow-xl`} />
+                            <div className="bg-gray-50 rounded-lg p-3">
+                              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Date</p>
+                              <p className="text-lg font-semibold text-gray-900">
+                                {new Date(entry.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                              </p>
                             </div>
-                          </motion.div>
-                        );
-                      })
-                      ) : (
-                        // Show entries in order if less than 3
-                        leaderboard.slice(0, 3).map((entry, index) => {
-                          const displayIndex = index;
-                          const rank = index + 1;
-
-                          const heights = {
-                            1: 'h-72 lg:h-96',
-                            2: 'h-60 lg:h-80',
-                            3: 'h-52 lg:h-72'
-                          };
-
-                          const colors = {
-                            1: { bg: 'from-amber-400 via-yellow-400 to-amber-500', text: 'text-amber-900', border: 'border-amber-300' },
-                            2: { bg: 'from-slate-300 via-gray-300 to-slate-400', text: 'text-slate-800', border: 'border-slate-300' },
-                            3: { bg: 'from-orange-400 via-amber-600 to-orange-500', text: 'text-orange-900', border: 'border-orange-400' }
-                          };
-                          
-                          const heightClass = heights[rank as 1 | 2 | 3];
-                          const colorSet = colors[rank as 1 | 2 | 3];
-
-                          return (
-                            <motion.div
-                              key={entry._id}
-                              initial={{ opacity: 0, y: 100 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{
-                                duration: 0.8,
-                                delay: 0.3 + displayIndex * 0.15,
-                                type: "spring",
-                                bounce: 0.4
-                              }}
-                              whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                              className="flex-1 group cursor-pointer max-w-xs"
-                            >
-                              <div className="relative">
-                                {/* Trophy/Medal Icon */}
-                                <motion.div
-                                  initial={{ scale: 0, rotate: -180 }}
-                                  animate={{ scale: 1, rotate: 0 }}
-                                  transition={{ delay: 0.6 + displayIndex * 0.15, type: "spring", bounce: 0.6 }}
-                                  className="absolute -top-8 lg:-top-12 left-1/2 -translate-x-1/2 z-20"
-                                >
-                                  <div className={`w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br ${colorSet.bg} flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-125 transition-transform duration-300`}>
-                                    {rank === 1 && <Crown className="w-6 h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />}
-                                    {rank === 2 && <Medal className="w-6 h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />}
-                                    {rank === 3 && <Medal className="w-6 h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />}
-                                  </div>
-                                </motion.div>
-
-                                {/* Podium */}
-                                <div className={`relative ${heightClass} rounded-t-3xl bg-gradient-to-b ${colorSet.bg} border-4 ${colorSet.border} border-b-0 shadow-2xl overflow-hidden group-hover:shadow-3xl transition-all duration-300`}>
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent" />
-                                  <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black/10 to-transparent" />
-
-                                  {/* Rank number */}
-                                  <div className="absolute top-4 lg:top-6 inset-x-0 flex justify-center">
-                                    <div className={`text-5xl lg:text-8xl font-black ${colorSet.text} opacity-20 group-hover:opacity-30 transition-opacity`}>
-                                      {rank}
-                                    </div>
-                                  </div>
-
-                                  {/* User info */}
-                                  <div className="absolute bottom-0 inset-x-0 p-4 lg:p-6 text-center">
-                                    <h3 className={`text-base lg:text-xl font-black ${colorSet.text} mb-1 lg:mb-2 truncate drop-shadow-sm`}>
-                                      {entry.userName}
-                                    </h3>
-                                    <div className={`text-2xl lg:text-4xl font-black ${colorSet.text} mb-1 drop-shadow-md`}>
-                                      {entry.percentage}%
-                                    </div>
-                                    <p className={`text-xs lg:text-sm font-bold ${colorSet.text} opacity-80`}>
-                                      {entry.score}/{entry.totalQuestions} correct
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Podium base */}
-                                <div className={`h-3 lg:h-4 bg-gradient-to-b ${colorSet.bg} border-4 border-t-0 ${colorSet.border} rounded-b-lg shadow-xl`} />
-                              </div>
-                            </motion.div>
-                          );
-                        })
-                      )}
-                    </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
               {/* Rest of Leaderboard - Table View */}
               {leaderboard.length > 3 && (
-                <div className="space-y-4">
-                  <motion.div
-                    initial={{ opacity: 0, scaleX: 0 }}
-                    animate={{ opacity: 1, scaleX: 1 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="flex items-center gap-4 mb-10"
-                  >
-                    <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-gray-300 to-gray-300" />
-                    <span className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] px-4 py-2 bg-gray-50 rounded-full">
-                      All Rankings
-                    </span>
-                    <div className="h-0.5 flex-1 bg-gradient-to-l from-transparent via-gray-300 to-gray-300" />
-                  </motion.div>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-lg overflow-hidden">
+                  {/* Table Header */}
+                  <div className="px-6 sm:px-8 py-5 border-b border-gray-100">
+                    <h2 className="text-xl font-black text-gray-900">All Players</h2>
+                  </div>
 
-                  {leaderboard.slice(3).map((entry, index) => {
-                  // Calculate rank with fallback - entry.rank from backend, or calculate from index
-                  const displayRank = entry.rank || (index + 4);
-                  const isCurrentUser = entry.userName === currentUserName;
+                  {/* Table Rows */}
+                  <div className="divide-y divide-gray-50">
+                    {leaderboard.slice(3).map((entry, index) => {
+                      const displayRank = entry.rank || (index + 4);
+                      const isCurrentUser = entry.userName === currentUserName;
+                      const progressWidth = getProgressWidth(entry.percentage, topScore);
 
-                  return (
-                  <motion.div
-                    key={entry._id}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.6 + index * 0.03, type: "spring", stiffness: 100 }}
-                    whileHover={{ x: 4, transition: { duration: 0.2 } }}
-                    className="group relative"
-                  >
-                    {/* Subtle gradient background on hover or current user */}
-                    <div className={`absolute inset-0 rounded-2xl transition-opacity duration-300 ${
-                      isCurrentUser 
-                        ? 'bg-gradient-to-r from-[#3b82f6]/10 via-purple-500/10 to-[#3b82f6]/10 opacity-100' 
-                        : 'bg-gradient-to-r from-[#3b82f6]/0 via-[#3b82f6]/5 to-[#3b82f6]/0 opacity-0 group-hover:opacity-100'
-                    }`} />
-
-                    <div className={`relative p-4 sm:p-6 md:p-8 rounded-2xl bg-white shadow-md hover:shadow-xl transition-all duration-300 ${
-                      isCurrentUser 
-                        ? 'border-2 border-[#3b82f6] ring-2 ring-[#3b82f6]/20' 
-                        : 'border-2 border-gray-100 hover:border-[#3b82f6]/30'
-                    }`}>
-                      {isCurrentUser && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#3b82f6] text-white text-xs font-bold shadow-lg">
-                            <Star className="w-3 h-3 fill-current" />
-                            You
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-3 sm:gap-4 md:gap-8">
-                        {/* Rank Badge */}
-                        <div className="flex-shrink-0">
-                          <div className="relative">
-                            <div className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 rotate-3 group-hover:rotate-0 ${
-                              isCurrentUser
-                                ? 'bg-gradient-to-br from-purple-500 via-[#3b82f6] to-blue-600 shadow-[#3b82f6]/50 group-hover:shadow-2xl'
-                                : 'bg-gradient-to-br from-[#3b82f6] via-blue-600 to-[#2563eb] shadow-[#3b82f6]/30 group-hover:shadow-2xl group-hover:shadow-[#3b82f6]/40'
-                            }`}>
-                              <span className="text-xl sm:text-2xl md:text-3xl font-black text-white">
-                                {displayRank}
-                              </span>
-                            </div>
-                            {/* Decorative corner accent */}
-                            <div className={`absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 rounded-full transition-opacity ${
-                              isCurrentUser ? 'bg-purple-400 opacity-100' : 'bg-blue-400 opacity-50 group-hover:opacity-100'
-                            }`} />
+                      return (
+                        <motion.div
+                          key={entry._id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3, delay: index * 0.02 }}
+                          className={`group flex items-center gap-4 sm:gap-6 px-6 sm:px-8 py-5 hover:bg-gray-50 transition-colors duration-200 ${
+                            isCurrentUser ? 'bg-[#3b82f6]/5' : ''
+                          }`}
+                        >
+                          {/* Rank */}
+                          <div className="flex-shrink-0 w-12 sm:w-16">
+                            <span className="text-xl sm:text-2xl font-semibold text-gray-400">
+                              {displayRank}
+                            </span>
                           </div>
-                        </div>
 
-                        {/* User Info */}
-                        <div className="flex-1 min-w-0">
-                          <h4 className={`text-base sm:text-lg md:text-2xl font-black truncate mb-1 md:mb-2 transition-colors duration-300 ${
-                            isCurrentUser ? 'text-[#3b82f6]' : 'text-gray-900 group-hover:text-[#3b82f6]'
-                          }`}>
-                            {entry.userName}
-                          </h4>
-                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-4 text-xs sm:text-sm md:text-base text-gray-600">
-                            <span className="font-semibold bg-gray-50 px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg">
+                          {/* Player Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className={`text-base sm:text-lg font-semibold truncate ${
+                                isCurrentUser ? 'text-[#3b82f6]' : 'text-gray-900'
+                              }`}>
+                                {entry.userName}
+                              </h4>
+                              {isCurrentUser && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#3b82f6] text-white text-xs font-bold">
+                                  <Star className="w-3 h-3 fill-current" />
+                                  You
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500">
                               {entry.score}/{entry.totalQuestions} correct
-                            </span>
-                            <span className="text-gray-300 hidden sm:inline">•</span>
-                            <span className="hidden sm:inline text-gray-500 text-xs md:text-sm">
-                              {new Date(entry.completedAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Score - Large and prominent */}
-                        <div className="flex-shrink-0 text-right">
-                          <div className="relative">
-                            <div className={`text-3xl sm:text-4xl md:text-5xl font-black bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300 ${
-                              isCurrentUser
-                                ? 'bg-gradient-to-br from-purple-500 via-[#3b82f6] to-blue-600'
-                                : 'bg-gradient-to-br from-[#3b82f6] to-blue-600'
-                            }`}>
-                              {entry.percentage}
-                              <span className="text-lg sm:text-2xl md:text-3xl">%</span>
+                            </p>
+                            {/* Progress Bar */}
+                            <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progressWidth}%` }}
+                                transition={{ duration: 0.8, delay: 0.2 + index * 0.02 }}
+                                className="h-full bg-[#3b82f6] rounded-full"
+                              />
                             </div>
-                            {/* Subtle shimmer effect */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 opacity-0 group-hover:opacity-20 group-hover:translate-x-full transition-all duration-700" />
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+
+                          {/* Score */}
+                          <div className="flex-shrink-0">
+                            <span className="text-2xl sm:text-3xl font-light text-[#3b82f6]">
+                              {entry.percentage}%
+                            </span>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
