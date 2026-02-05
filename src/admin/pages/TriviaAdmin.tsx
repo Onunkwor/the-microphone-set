@@ -39,7 +39,7 @@ export default function TriviaAdmin() {
 
   const fetchData = async () => {
     try {
-      const data = await triviaApi.getAll({ active: 'true' });
+      const data = await triviaApi.getAll({ includeExpired: 'true' });
       setTrivia(data);
     } catch (error) {
       console.error('Failed to fetch trivia:', error);
@@ -77,8 +77,9 @@ export default function TriviaAdmin() {
     try {
       await triviaApi.delete(id);
       setTrivia(trivia.filter((t) => t._id !== id));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete:', error);
+      alert(`Failed to delete trivia question: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -108,8 +109,9 @@ export default function TriviaAdmin() {
         setTrivia([created, ...trivia]);
       }
       setModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save:', error);
+      alert(`Failed to save trivia question: ${error.message || 'Unknown error'}`);
     } finally {
       setSaving(false);
     }

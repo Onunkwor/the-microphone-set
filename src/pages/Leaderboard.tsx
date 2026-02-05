@@ -26,7 +26,7 @@ const Leaderboard = () => {
   // Filters
   const [period, setPeriod] = useState<"all-time" | "monthly" | "weekly">("all-time");
 
-  const limit = 50;
+  const limit = 20;
 
   useEffect(() => {
     // Get user name from localStorage if they've played trivia
@@ -141,7 +141,7 @@ const Leaderboard = () => {
               className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl"
             >
               {[
-                { icon: TrendingUp, value: stats.totalQuizzes.toLocaleString(), label: "Total Quizzes" },
+                { icon: TrendingUp, value: (stats.totalPlayers || stats.totalQuizzes).toLocaleString(), label: "Total Players" },
                 { icon: Target, value: `${Math.round(stats.averagePercentage)}%`, label: "Average Score" },
                 { icon: Award, value: `${stats.topScore?.percentage || 0}%`, label: "Top Score" }
               ].map((stat, index) => (
@@ -185,7 +185,7 @@ const Leaderboard = () => {
                       <p className="text-sm text-gray-500 mb-1 font-medium">Your Ranking</p>
                       <h3 className="text-2xl sm:text-3xl font-black text-gray-900 flex items-baseline gap-2">
                         <span className="text-[#3b82f6]">#{userRanking.rank}</span>
-                        <span className="text-base sm:text-lg text-gray-500 font-normal">of {stats?.totalPlayers || 'all'} players</span>
+                        <span className="text-base sm:text-lg text-gray-500 font-normal">of {stats?.totalPlayers || stats?.totalQuizzes || 'all'} players</span>
                       </h3>
                     </div>
                   </div>
@@ -301,9 +301,9 @@ const Leaderboard = () => {
                               <p className="text-lg font-semibold text-gray-900">{entry.score}/{entry.totalQuestions}</p>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-3">
-                              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Date</p>
+                              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Attempts</p>
                               <p className="text-lg font-semibold text-gray-900">
-                                {new Date(entry.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                {entry.attemptCount || 1}
                               </p>
                             </div>
                           </div>
@@ -363,6 +363,9 @@ const Leaderboard = () => {
                             </div>
                             <p className="text-sm text-gray-500">
                               {entry.score}/{entry.totalQuestions} correct
+                              {entry.attemptCount && entry.attemptCount > 1 && (
+                                <span className="ml-2 text-gray-400">&middot; {entry.attemptCount} attempts</span>
+                              )}
                             </p>
                             {/* Progress Bar */}
                             <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">

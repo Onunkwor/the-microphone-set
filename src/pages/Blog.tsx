@@ -324,7 +324,11 @@ const Blog = () => {
                 <div className="relative h-52 overflow-hidden">
                   <div
                     className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-                    style={{ backgroundImage: `url(${article.image})` }}
+                    style={{
+                      backgroundImage: article.image
+                        ? `url(${article.image})`
+                        : 'linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #1e3a5f 100%)',
+                    }}
                   />
 
                   {/* Number badge */}

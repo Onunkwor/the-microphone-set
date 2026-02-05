@@ -161,6 +161,7 @@ export interface Trivia {
   difficulty: 'easy' | 'medium' | 'hard';
   explanation: string;
   active: boolean;
+  expiresAt?: string;
 }
 
 // Leaderboard interfaces
@@ -192,6 +193,7 @@ export interface LeaderboardEntry {
   difficulty: string;
   completedAt: string;
   rank?: number;
+  attemptCount?: number;
 }
 
 export interface LeaderboardResponse {
@@ -202,6 +204,7 @@ export interface LeaderboardResponse {
 
 export interface LeaderboardStats {
   totalQuizzes: number;
+  totalPlayers: number;
   averagePercentage: number;
   topScore: {
     userName: string;

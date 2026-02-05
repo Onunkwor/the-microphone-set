@@ -66,8 +66,9 @@ export default function BlogsAdmin() {
     try {
       await blogsApi.delete(id);
       setBlogs(blogs.filter((b) => b._id !== id));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to delete:', error);
+      alert(`Failed to delete blog: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -145,6 +146,7 @@ export default function BlogsAdmin() {
             type="url"
             value={formData.image}
             onChange={(v) => updateField('image', v)}
+            required
           />
           <FormField
             label="External URL"
