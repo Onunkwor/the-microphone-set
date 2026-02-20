@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { triviaApi, type Trivia } from '@/services/api';
+import { triviaApi, leaderboardApi, type Trivia } from '@/services/api';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
@@ -36,6 +36,21 @@ export default function TriviaAdmin() {
   const [editItem, setEditItem] = useState<Trivia | null>(null);
   const [formData, setFormData] = useState(emptyTrivia);
   const [saving, setSaving] = useState(false);
+  const [deletingResults, setDeletingResults] = useState(false);
+
+  const handleDeleteAllResults = async () => {
+    if (!confirm('Are you sure you want to delete ALL quiz results? This will clear the entire leaderboard and cannot be undone.')) return;
+    setDeletingResults(true);
+    try {
+      const result = await leaderboardApi.deleteAllResults();
+      alert(`Successfully deleted ${result.deletedCount} quiz results.`);
+    } catch (error: any) {
+      console.error('Failed to delete results:', error);
+      alert(`Failed to delete quiz results: ${error.message || 'Unknown error'}`);
+    } finally {
+      setDeletingResults(false);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -180,6 +195,18 @@ export default function TriviaAdmin() {
 
   return (
     <>
+      <div className="flex justify-end mb-4">
+        <button
+          type="button"
+          onClick={handleDeleteAllResults}
+          disabled={deletingResults}
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 text-white text-sm rounded-lg transition-colors flex items-center gap-2"
+        >
+          <Trash2 className="w-4 h-4" />
+          {deletingResults ? 'Deleting...' : 'Delete All Quiz Results'}
+        </button>
+      </div>
+
       <DataTable
         title="Trivia Questions"
         data={trivia}

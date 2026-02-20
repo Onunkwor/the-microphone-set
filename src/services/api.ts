@@ -246,4 +246,8 @@ export const leaderboardApi = {
     return fetchApi<LeaderboardEntry>(`/leaderboard/personal/${encodeURIComponent(userName)}${query}`);
   },
   getStats: () => fetchApi<LeaderboardStats>('/leaderboard/stats'),
+  deleteAllResults: () =>
+    fetchApi<{ message: string; deletedCount: number }>('/leaderboard/results', {
+      method: 'DELETE',
+    }),
 };

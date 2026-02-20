@@ -93,10 +93,11 @@ const Trivia = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const data = await triviaApi.getRandom(8);
+        const data = await triviaApi.getAll();
         if (data && data.length > 0) {
-          // Store full TriviaType objects to preserve explanations
-          setQuestions(data);
+          // Shuffle questions for a random order each time
+          const shuffled = [...data].sort(() => Math.random() - 0.5);
+          setQuestions(shuffled);
         } else {
           // Map fallback to TriviaType format
           const mappedFallback: TriviaType[] = fallbackQuestions.map((q, i) => ({
