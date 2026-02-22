@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Share2, RotateCcw, Trophy, Copy, Facebook, ArrowRight, Loader2 } from "lucide-react";
+import { Share2, RotateCcw, Trophy, ArrowRight, Loader2 } from "lucide-react";
+import html2canvas from "html2canvas";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { triviaApi, leaderboardApi, type Trivia as TriviaType } from "@/services/api";
@@ -79,7 +80,9 @@ const Trivia = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sessionId] = useState(() => `${Date.now()}-${Math.random().toString(36).substring(2)}`);
   const [userRanking, setUserRanking] = useState<number>();
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const shareCardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const savedName = localStorage.getItem('trivia_user_name');
@@ -323,27 +326,40 @@ const Trivia = () => {
     window.scrollTo(0, 0);
   };
 
-  const shareOnTwitter = () => {
-    const percentage = Math.round((score / questions.length) * 100);
-    const text = `I just scored ${score}/${questions.length} (${percentage}%) on The Microphone Set's Music Trivia! Think you can beat me?`;
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      text
-    )}&url=${encodeURIComponent(window.location.origin + "/trivia")}`;
-    window.open(url, "_blank");
-  };
+  const shareAsImage = async () => {
+    if (!shareCardRef.current) return;
+    setIsGeneratingImage(true);
+    try {
+      const canvas = await html2canvas(shareCardRef.current, {
+        backgroundColor: "#f5f0e8",
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
 
-  const shareOnFacebook = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-      window.location.origin + "/trivia"
-    )}`;
-    window.open(url, "_blank");
-  };
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], "my-trivia-result.png", { type: "image/png" });
+        const shareText = `I scored ${score}/${questions.length} (${percentage}%) on The Microphone Set Music Trivia! Can you beat me? ${window.location.origin}/trivia`;
 
-  const copyToClipboard = () => {
-    const percentage = Math.round((score / questions.length) * 100);
-    const text = `I just scored ${score}/${questions.length} (${percentage}%) on The Microphone Set's Music Trivia! Can you beat me? ${window.location.origin}/trivia`;
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+        // Try native share (mobile) first
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text: shareText });
+        } else {
+          // Fallback: download the image
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "my-trivia-result.png";
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }, "image/png");
+    } catch (err) {
+      console.error("Failed to generate image:", err);
+    } finally {
+      setIsGeneratingImage(false);
+    }
   };
 
   const percentage = Math.round((score / questions.length) * 100);
@@ -370,6 +386,7 @@ const Trivia = () => {
 
             {/* Score Card */}
             <div
+              ref={shareCardRef}
               className="relative bg-paper-white p-8 md:p-10 border-2 border-ink/10 shadow-hard"
               style={{ transform: "rotate(-0.3deg)" }}
             >
@@ -421,35 +438,29 @@ const Trivia = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <button
-                    onClick={shareOnTwitter}
-                    className="flex items-center justify-center gap-2 font-typewriter text-xs uppercase tracking-wider px-4 py-3 bg-ink text-paper border-2 border-ink hover:shadow-hard transition-all duration-200"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    Twitter
-                  </button>
-                  <button
-                    onClick={shareOnFacebook}
-                    className="flex items-center justify-center gap-2 font-typewriter text-xs uppercase tracking-wider px-4 py-3 bg-cutout-red text-paper border-2 border-cutout-red hover:shadow-hard transition-all duration-200"
-                  >
-                    <Facebook className="w-4 h-4" />
-                    Facebook
-                  </button>
-                  <button
-                    onClick={copyToClipboard}
-                    className="flex items-center justify-center gap-2 font-typewriter text-xs uppercase tracking-wider px-4 py-3 bg-paper text-ink border-2 border-ink/20 hover:border-ink hover:shadow-hard transition-all duration-200"
-                  >
-                    <Copy className="w-4 h-4" />
-                    Copy Link
-                  </button>
-                </div>
+              <div className="space-y-3">
+                <button
+                  onClick={shareAsImage}
+                  disabled={isGeneratingImage}
+                  className={`w-full flex items-center justify-center gap-2 font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 border-[3px] transition-all duration-200 ${
+                    isGeneratingImage
+                      ? "bg-ink/30 text-paper/50 border-ink/30 cursor-not-allowed"
+                      : "bg-cutout-red text-paper border-cutout-red shadow-hard hover:shadow-hard-lg hover:-translate-y-0.5"
+                  }`}
+                  style={{ transform: "rotate(-0.5deg)" }}
+                >
+                  {isGeneratingImage ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Share2 className="w-5 h-5" />
+                  )}
+                  {isGeneratingImage ? "Generating..." : "Share Result"}
+                </button>
 
                 <button
                   onClick={resetQuiz}
                   className="w-full flex items-center justify-center gap-2 font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 bg-ink text-paper border-[3px] border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 transition-all duration-200"
-                  style={{ transform: "rotate(-0.5deg)" }}
+                  style={{ transform: "rotate(0.5deg)" }}
                 >
                   <RotateCcw className="w-5 h-5" />
                   Try Again
