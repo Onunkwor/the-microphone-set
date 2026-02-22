@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Share2, RotateCcw, Trophy, Copy, Facebook, ArrowRight, Loader2, Mic2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Share2, RotateCcw, Trophy, Copy, Facebook, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { triviaApi, leaderboardApi, type Trivia as TriviaType } from "@/services/api";
 import { MissedQuestions } from "@/components/trivia/MissedQuestions";
 import { LeaderboardPreview } from "@/components/trivia/LeaderboardPreview";
@@ -81,7 +81,6 @@ const Trivia = () => {
   const [userRanking, setUserRanking] = useState<number>();
   const questionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  // Load saved name from localStorage on mount
   useEffect(() => {
     const savedName = localStorage.getItem('trivia_user_name');
     if (savedName) {
@@ -89,17 +88,14 @@ const Trivia = () => {
     }
   }, []);
 
-  // Fetch questions from API with fallback
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const data = await triviaApi.getAll();
         if (data && data.length > 0) {
-          // Shuffle questions for a random order each time
           const shuffled = [...data].sort(() => Math.random() - 0.5);
           setQuestions(shuffled);
         } else {
-          // Map fallback to TriviaType format
           const mappedFallback: TriviaType[] = fallbackQuestions.map((q, i) => ({
             _id: `fallback-${i}`,
             question: q.question,
@@ -133,7 +129,7 @@ const Trivia = () => {
     fetchQuestions();
   }, []);
 
-const getSnarkyComment = (percentage: number) => {
+  const getSnarkyComment = (percentage: number) => {
     const pickRandom = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
     if (percentage === 100) {
@@ -280,7 +276,6 @@ const getSnarkyComment = (percentage: number) => {
   };
 
   const handleSubmit = async () => {
-    // Calculate score client-side for immediate feedback
     let finalScore = 0;
     questions.forEach((question, index) => {
       if (selectedAnswers[index] === question.correctAnswer) {
@@ -289,7 +284,6 @@ const getSnarkyComment = (percentage: number) => {
     });
     setScore(finalScore);
 
-    // Submit to backend for leaderboard
     try {
       const answers = questions.map((question, index) => ({
         questionId: question._id!,
@@ -305,7 +299,6 @@ const getSnarkyComment = (percentage: number) => {
       setUserRanking(result.ranking);
     } catch (error) {
       console.error("Failed to submit score:", error);
-      // Continue to results even if submission fails
     }
 
     setIsComplete(true);
@@ -357,97 +350,110 @@ const getSnarkyComment = (percentage: number) => {
   const answeredCount = Object.keys(selectedAnswers).length;
   const canSubmit = answeredCount === questions.length;
 
-  // Results Screen
+  // ===== RESULTS SCREEN =====
   if (isComplete) {
     return (
-      <div className="bg-white text-gray-900 overflow-hidden min-h-screen">
-        {/* Confetti celebration for high scores */}
+      <div className="bg-paper text-ink overflow-hidden min-h-screen">
         {percentage >= 80 && <Confetti />}
 
-        <div className="relative py-24 px-6 md:px-12">
-          {/* Background elements */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#3b82f6]/10 rounded-full blur-[150px]" />
-            <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-[#3b82f6]/5 rounded-full blur-[120px]" />
-          </div>
-
-          <div className="max-w-4xl mx-auto relative z-10 space-y-12">
+        <div className="relative py-20 px-6 md:px-12">
+          <div className="max-w-4xl mx-auto space-y-12">
             {/* Header */}
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
-                <Mic2 className="w-4 h-4 text-[#3b82f6]" />
-                <span className="text-sm text-gray-600 font-medium">The Microphone Set</span>
-              </div>
+              <span
+                className="inline-block bg-ink text-paper font-typewriter text-[11px] uppercase tracking-[3px] px-4 py-1.5 mb-6"
+                style={{ transform: "rotate(-2deg)" }}
+              >
+                Quiz Complete
+              </span>
             </div>
 
-            {/* Score Overview */}
-            <div className="p-8 md:p-10 rounded-3xl bg-white border border-gray-100 shadow-xl">
+            {/* Score Card */}
+            <div
+              className="relative bg-paper-white p-8 md:p-10 border-2 border-ink/10 shadow-hard"
+              style={{ transform: "rotate(-0.3deg)" }}
+            >
+              {/* Tape strips */}
+              <div className="absolute w-16 h-5 bg-cutout-yellow/70 top-[-10px] left-8 z-10" style={{ transform: "rotate(-3deg)" }} />
+              <div className="absolute w-14 h-4 bg-cutout-yellow/70 top-[-8px] right-12 z-10" style={{ transform: "rotate(2deg)" }} />
+
               <div className="text-center mb-8">
-                <div className="w-20 h-20 rounded-full bg-[#3b82f6] flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <Trophy className="w-10 h-10 text-white" />
+                <div
+                  className="inline-flex w-20 h-20 border-4 border-cutout-red rounded-full items-center justify-center mb-6"
+                  style={{ transform: "rotate(10deg)" }}
+                >
+                  <Trophy className="w-10 h-10 text-cutout-red" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="font-display text-3xl text-ink mb-2">
                   Hi {userName || "there"}!
                 </h2>
-                <p className="text-gray-500">Here are your results</p>
+                <p className="font-body text-ink/50">Here are your results</p>
               </div>
 
               <div className="text-center mb-8">
-                <div className="text-6xl font-bold text-gray-900 mb-2">
+                <div className="font-display text-7xl text-ink mb-2">
                   {score}/{questions.length}
                 </div>
-                <div className="text-2xl font-bold text-[#3b82f6] mb-6">
+                <div
+                  className="inline-block bg-cutout-red text-paper font-typewriter text-2xl px-4 py-1 mb-6"
+                  style={{ transform: "rotate(-1deg)" }}
+                >
                   {percentage}%
                 </div>
 
-                <div className="w-full bg-gray-100 rounded-full h-3 mb-6 overflow-hidden">
+                {/* Progress bar */}
+                <div className="w-full bg-ink/10 h-3 mb-6 overflow-hidden border border-ink/20">
                   <div
-                    className="h-3 bg-[#3b82f6] rounded-full transition-all duration-1000 ease-out"
+                    className="h-3 bg-cutout-red transition-all duration-1000 ease-out"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-2xl p-6 mb-8">
-                <p className="text-lg text-gray-700 text-center leading-relaxed">
-                  {getSnarkyComment(percentage)}
+              {/* Snarky comment */}
+              <div
+                className="bg-paper border-2 border-dashed border-ink/20 p-6 mb-8"
+                style={{ transform: "rotate(0.3deg)" }}
+              >
+                <p className="font-quote italic text-lg text-ink/70 text-center leading-relaxed">
+                  &ldquo;{getSnarkyComment(percentage)}&rdquo;
                 </p>
               </div>
 
+              {/* Action Buttons */}
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <Button
+                  <button
                     onClick={shareOnTwitter}
-                    className="bg-gray-900 hover:bg-gray-800 text-white rounded-full"
+                    className="flex items-center justify-center gap-2 font-typewriter text-xs uppercase tracking-wider px-4 py-3 bg-ink text-paper border-2 border-ink hover:shadow-hard transition-all duration-200"
                   >
-                    <Share2 className="w-4 h-4 mr-2" />
+                    <Share2 className="w-4 h-4" />
                     Twitter
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={shareOnFacebook}
-                    className="bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-full"
+                    className="flex items-center justify-center gap-2 font-typewriter text-xs uppercase tracking-wider px-4 py-3 bg-cutout-red text-paper border-2 border-cutout-red hover:shadow-hard transition-all duration-200"
                   >
-                    <Facebook className="w-4 h-4 mr-2" />
+                    <Facebook className="w-4 h-4" />
                     Facebook
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={copyToClipboard}
-                    variant="outline"
-                    className="border-2 border-gray-200 rounded-full hover:border-[#3b82f6] hover:text-[#3b82f6]"
+                    className="flex items-center justify-center gap-2 font-typewriter text-xs uppercase tracking-wider px-4 py-3 bg-paper text-ink border-2 border-ink/20 hover:border-ink hover:shadow-hard transition-all duration-200"
                   >
-                    <Copy className="w-4 h-4 mr-2" />
+                    <Copy className="w-4 h-4" />
                     Copy Link
-                  </Button>
+                  </button>
                 </div>
 
-                <Button
+                <button
                   onClick={resetQuiz}
-                  size="lg"
-                  className="w-full bg-[#3b82f6] text-white hover:bg-[#2563eb] rounded-full py-6 font-semibold transition-all duration-300 hover:shadow-[0_8px_30px_#3b82f640]"
+                  className="w-full flex items-center justify-center gap-2 font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 bg-ink text-paper border-[3px] border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 transition-all duration-200"
+                  style={{ transform: "rotate(-0.5deg)" }}
                 >
-                  <RotateCcw className="w-5 h-5 mr-2" />
+                  <RotateCcw className="w-5 h-5" />
                   Try Again
-                </Button>
+                </button>
               </div>
             </div>
 
@@ -459,12 +465,12 @@ const getSnarkyComment = (percentage: number) => {
 
             {/* Explore more */}
             <div className="text-center">
-              <p className="text-gray-500 mb-4">Want to discover more music?</p>
+              <p className="font-body text-ink/50 mb-4">Want to discover more music?</p>
               <Link
                 to="/recommendations"
-                className="inline-flex items-center gap-2 text-[#3b82f6] font-semibold hover:gap-4 transition-all duration-300"
+                className="inline-flex items-center gap-2 font-typewriter text-sm uppercase tracking-wider text-cutout-red hover:gap-4 transition-all duration-300 no-underline"
               >
-                Get Personalized Recommendations <ArrowRight className="w-4 h-4" />
+                Get Recommendations <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -473,47 +479,58 @@ const getSnarkyComment = (percentage: number) => {
     );
   }
 
-  // Loading Screen
+  // ===== LOADING SCREEN =====
   if (isLoading) {
     return (
-      <div className="bg-white text-gray-900 min-h-screen flex items-center justify-center">
+      <div className="bg-paper text-ink min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-[#3b82f6] animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Loading trivia questions...</p>
+          <Loader2 className="w-12 h-12 text-ink animate-spin mx-auto mb-4" />
+          <p className="font-typewriter text-sm uppercase tracking-wider text-ink/60">Loading questions...</p>
         </div>
       </div>
     );
   }
 
-  // Name Prompt Screen - shown before trivia starts
+  // ===== NAME PROMPT SCREEN =====
   if (showNamePrompt) {
     return (
-      <div className="bg-white text-gray-900 min-h-screen flex items-center justify-center px-6">
+      <div className="bg-paper text-ink min-h-screen flex items-center justify-center px-6">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
-              <Mic2 className="w-4 h-4 text-[#3b82f6]" />
-              <span className="text-sm text-gray-600 font-medium tracking-wide uppercase">
-                Music Trivia
-              </span>
-            </div>
+            <span
+              className="inline-block bg-ink text-paper font-typewriter text-[11px] uppercase tracking-[3px] px-4 py-1.5 mb-6"
+              style={{ transform: "rotate(-2deg)" }}
+            >
+              Music Trivia
+            </span>
 
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-              Ready to Test Your
+            <h1 className="font-display text-4xl sm:text-5xl text-ink mb-4">
+              Ready to Test
               <br />
-              <span className="text-[#3b82f6]">Music Knowledge?</span>
+              <span
+                className="inline-block bg-cutout-red text-paper px-4 py-1 relative cutout-border"
+                style={{ transform: "rotate(-1.5deg)" }}
+              >
+                Your Knowledge?
+              </span>
             </h1>
 
-            <p className="text-gray-600">
+            <p className="font-body text-ink/60">
               Answer {questions.length} questions and compete for a spot on the leaderboard!
             </p>
           </div>
 
-          <div className="p-8 rounded-2xl bg-white border border-gray-200 shadow-lg">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
+          <div
+            className="relative bg-paper-white p-8 border-2 border-ink/10"
+            style={{ transform: "rotate(-0.5deg)" }}
+          >
+            {/* Tape */}
+            <div className="absolute w-16 h-5 bg-cutout-yellow/70 top-[-10px] left-8 z-10" style={{ transform: "rotate(-2deg)" }} />
+
+            <h3 className="font-display text-xl text-ink mb-2">
               {localStorage.getItem('trivia_user_name') ? 'Welcome back!' : 'Enter Your Name'}
             </h3>
-            <p className="text-gray-500 text-sm mb-4">
+            <p className="font-body text-sm text-ink/50 mb-4">
               {localStorage.getItem('trivia_user_name')
                 ? 'Confirm your name or enter a new one to continue.'
                 : 'Your name will appear on the leaderboard.'}
@@ -524,7 +541,7 @@ const getSnarkyComment = (percentage: number) => {
               placeholder="Your name"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
-              className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-[#3b82f6] outline-none transition-colors mb-4"
+              className="w-full px-4 py-3 bg-paper border-2 border-ink/20 font-body text-sm focus:outline-none focus:border-cutout-red transition-colors mb-4 placeholder:text-ink/20"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleNameConfirm();
@@ -534,64 +551,63 @@ const getSnarkyComment = (percentage: number) => {
               autoFocus
             />
 
-            <Button
+            <button
               onClick={handleNameConfirm}
               disabled={!nameInput.trim()}
-              size="lg"
-              className={`w-full rounded-full py-6 font-bold transition-all duration-300 ${
+              className={`w-full font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 border-[3px] transition-all duration-200 ${
                 nameInput.trim()
-                  ? "bg-[#3b82f6] text-white hover:bg-[#2563eb] hover:shadow-[0_8px_30px_#3b82f640]"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  ? "bg-ink text-paper border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 cursor-pointer"
+                  : "bg-ink/20 text-ink/40 border-ink/20 cursor-not-allowed"
               }`}
+              style={{ transform: "rotate(-0.5deg)" }}
             >
               Start Trivia
-            </Button>
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Quiz Screen
+  // ===== QUIZ SCREEN =====
   return (
-    <div className="bg-white text-gray-900 overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative py-16 px-6 md:px-12">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#3b82f6]/10 rounded-full blur-[150px]" />
-        </div>
+    <div className="bg-paper text-ink overflow-hidden">
+      {/* Hero */}
+      <section className="pt-16 pb-8 px-6 md:px-12">
+        <div className="max-w-2xl mx-auto text-center">
+          <span
+            className="inline-block bg-cutout-yellow text-ink font-typewriter text-[11px] uppercase tracking-[3px] px-4 py-1.5 mb-6"
+            style={{ transform: "rotate(-2deg)" }}
+          >
+            Playing as {userName}
+          </span>
 
-        <div className="max-w-2xl mx-auto relative z-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white shadow-sm mb-6">
-              <Mic2 className="w-4 h-4 text-[#3b82f6]" />
-              <span className="text-sm text-gray-600 font-medium tracking-wide uppercase">
-                Playing as {userName}
-              </span>
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl leading-[0.95] text-ink mb-4">
+            Music Trivia
+            <br />
+            <span
+              className="inline-block bg-cutout-red text-paper px-4 py-1 relative cutout-border"
+              style={{ transform: "rotate(-1.5deg)" }}
+            >
+              Challenge
+            </span>
+          </h1>
+
+          <p className="font-body text-lg text-ink/60 mb-8">
+            Answer all {questions.length} questions to see your score
+          </p>
+
+          {/* Progress */}
+          <div className="max-w-md mx-auto">
+            <div className="flex items-center justify-between font-typewriter text-xs uppercase tracking-wider text-ink/50 mb-2">
+              <span>Progress</span>
+              <span>{answeredCount}/{questions.length} answered</span>
             </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-[0.95] tracking-tight text-gray-900 mb-4">
-              Music Trivia
-              <br />
-              <span className="text-[#3b82f6]">Challenge</span>
-            </h1>
-
-            <p className="text-lg text-gray-600 mb-8">
-              Answer all {questions.length} questions to see your score
-            </p>
-
-            {/* Progress */}
-            <div className="max-w-md mx-auto">
-              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                <span className="font-medium">Progress</span>
-                <span>{answeredCount}/{questions.length} answered</span>
-              </div>
-              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-2 bg-[#3b82f6] rounded-full transition-all duration-300"
-                  style={{ width: `${(answeredCount / questions.length) * 100}%` }}
-                />
-              </div>
+            <div className="w-full bg-ink/10 h-2 overflow-hidden border border-ink/10">
+              <div
+                className="h-2 bg-cutout-red transition-all duration-300"
+                style={{ width: `${(answeredCount / questions.length) * 100}%` }}
+              />
             </div>
           </div>
         </div>
@@ -599,32 +615,51 @@ const getSnarkyComment = (percentage: number) => {
 
       {/* Questions */}
       <section className="py-8 px-6 md:px-12">
-        <div className="max-w-2xl mx-auto space-y-12">
+        <div className="max-w-2xl mx-auto space-y-8">
           {questions.map((question, questionIndex) => (
-            <div
+            <motion.div
               key={questionIndex}
               ref={(el) => {
                 questionRefs.current[questionIndex] = el;
               }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: (questionIndex % 3) * 0.1 }}
               className={`transition-all duration-500 ${
                 visibleQuestion === questionIndex
                   ? "opacity-100 scale-100"
                   : "opacity-40 blur-[2px] scale-[0.98]"
               }`}
             >
-              <div className="p-6 md:p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-shadow duration-300">
+              <div
+                className="relative bg-paper-white p-6 md:p-8 border-2 border-ink/10 hover:border-ink hover:shadow-hard transition-all duration-300"
+                style={{ transform: `rotate(${questionIndex % 2 === 0 ? -0.3 : 0.3}deg)` }}
+              >
+                {/* Tape */}
+                <div
+                  className="absolute w-12 h-3.5 bg-cutout-yellow/70 top-[-7px] left-6 z-10"
+                  style={{ transform: `rotate(${questionIndex % 2 === 0 ? 2 : -2}deg)` }}
+                />
+
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3b82f6]/10 text-[#3b82f6] text-sm font-semibold">
+                    <span
+                      className="inline-block bg-ink text-paper font-typewriter text-[10px] uppercase tracking-wider px-2.5 py-1"
+                      style={{ transform: "rotate(-1deg)" }}
+                    >
                       Question {questionIndex + 1} of {questions.length}
                     </span>
                     {selectedAnswers[questionIndex] !== undefined && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-50 text-green-600 text-sm font-semibold">
+                      <span
+                        className="inline-block bg-cutout-red text-paper font-typewriter text-[10px] uppercase tracking-wider px-2.5 py-1"
+                        style={{ transform: "rotate(1deg)" }}
+                      >
                         Answered
                       </span>
                     )}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="font-display text-xl text-ink">
                     {question.question}
                   </h3>
                 </div>
@@ -633,10 +668,10 @@ const getSnarkyComment = (percentage: number) => {
                   {question.options.map((option, optionIndex) => (
                     <label
                       key={optionIndex}
-                      className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+                      className={`flex items-center p-4 border-2 cursor-pointer transition-all duration-200 ${
                         selectedAnswers[questionIndex] === optionIndex
-                          ? "border-[#3b82f6] bg-[#3b82f6]/5"
-                          : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                          ? "border-cutout-red bg-cutout-red/5"
+                          : "border-ink/10 hover:border-ink/30 hover:bg-paper"
                       }`}
                     >
                       <input
@@ -645,14 +680,14 @@ const getSnarkyComment = (percentage: number) => {
                         value={optionIndex}
                         checked={selectedAnswers[questionIndex] === optionIndex}
                         onChange={() => handleAnswerSelect(questionIndex, optionIndex)}
-                        className="mr-4 w-5 h-5 text-[#3b82f6] focus:ring-[#3b82f6] accent-[#3b82f6]"
+                        className="mr-4 w-4 h-4 accent-[#e63946]"
                       />
-                      <span className="text-gray-900 font-medium">{option}</span>
+                      <span className="font-body text-sm text-ink">{option}</span>
                     </label>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -660,20 +695,20 @@ const getSnarkyComment = (percentage: number) => {
       {/* Submit Button */}
       <section className="py-16 px-6 md:px-12">
         <div className="max-w-2xl mx-auto text-center">
-          <Button
+          <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            size="lg"
-            className={`rounded-full px-10 py-7 text-lg font-bold transition-all duration-300 ${
+            className={`font-typewriter text-sm uppercase tracking-[2px] px-10 py-5 border-[3px] transition-all duration-300 ${
               canSubmit
-                ? "bg-[#3b82f6] text-white hover:bg-[#2563eb] hover:scale-105 hover:shadow-[0_8px_30px_#3b82f640]"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                ? "bg-ink text-paper border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 cursor-pointer"
+                : "bg-ink/20 text-ink/40 border-ink/20 cursor-not-allowed"
             }`}
+            style={{ transform: "rotate(-0.5deg)" }}
           >
             {canSubmit
               ? "Submit Quiz"
               : `Answer ${questions.length - answeredCount} more questions`}
-          </Button>
+          </button>
         </div>
       </section>
     </div>

@@ -23,14 +23,18 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200"
+        className="relative bg-cutout-yellow/20 p-8 border-2 border-dashed border-ink/20"
+        style={{ transform: "rotate(0.3deg)" }}
       >
         <div className="text-center">
-          <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-white" />
+          <div
+            className="inline-flex w-16 h-16 border-4 border-cutout-red rounded-full items-center justify-center mb-4"
+            style={{ transform: "rotate(10deg)" }}
+          >
+            <CheckCircle className="w-8 h-8 text-cutout-red" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect Score!</h3>
-          <p className="text-gray-600">
+          <h3 className="font-display text-2xl text-ink mb-2">Perfect Score!</h3>
+          <p className="font-body text-ink/60">
             You answered all {questions.length} questions correctly. Outstanding!
           </p>
         </div>
@@ -51,10 +55,16 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Review Your Answers</h3>
-        <p className="text-gray-600">
+        <span
+          className="inline-block bg-cutout-red text-paper font-typewriter text-xs uppercase tracking-[3px] px-3 py-1 mb-4"
+          style={{ transform: "rotate(-1deg)" }}
+        >
+          Review
+        </span>
+        <h3 className="font-display text-2xl text-ink mb-2">Review Your Answers</h3>
+        <p className="font-body text-ink/60">
           You got {correctCount} correct and missed {missedQuestions.length}.
-          Let's learn from the ones you missed!
+          Let&apos;s learn from the ones you missed!
         </p>
       </div>
 
@@ -69,26 +79,30 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: missedIndex * 0.1 }}
-              className="rounded-2xl bg-white border border-red-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="bg-paper-white border-2 border-ink/10 overflow-hidden hover:border-ink/30 transition-all duration-300"
+              style={{ transform: `rotate(${missedIndex % 2 === 0 ? -0.2 : 0.2}deg)` }}
             >
               <button
                 onClick={() => toggleQuestion(index)}
-                className="w-full p-6 text-left hover:bg-red-50/50 transition-colors duration-200"
+                className="w-full p-6 text-left hover:bg-paper transition-colors duration-200 cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-600 text-sm font-semibold">
-                        <XCircle className="w-4 h-4" />
+                      <span
+                        className="inline-flex items-center gap-2 bg-cutout-red text-paper font-typewriter text-[10px] uppercase tracking-wider px-2.5 py-1"
+                        style={{ transform: "rotate(-1deg)" }}
+                      >
+                        <XCircle className="w-3.5 h-3.5" />
                         Question {index + 1}
                       </span>
                       {question.category && (
-                        <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                        <span className="font-typewriter text-[10px] uppercase tracking-wider text-ink/40 px-2 py-0.5 border border-ink/10">
                           {question.category}
                         </span>
                       )}
                     </div>
-                    <h4 className="text-lg font-semibold text-gray-900">
+                    <h4 className="font-display text-lg text-ink">
                       {question.question}
                     </h4>
                   </div>
@@ -96,7 +110,7 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
                     animate={{ rotate: isExpanded ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <ChevronDown className="w-6 h-6 text-gray-400 flex-shrink-0" />
+                    <ChevronDown className="w-6 h-6 text-ink/30 flex-shrink-0" />
                   </motion.div>
                 </div>
               </button>
@@ -110,7 +124,7 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-6 space-y-4 border-t border-red-100">
+                    <div className="px-6 pb-6 space-y-4 border-t-2 border-ink/10">
                       {/* Answer options */}
                       <div className="space-y-2 pt-4">
                         {question.options.map((option, optionIndex) => {
@@ -120,39 +134,42 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
                           return (
                             <div
                               key={optionIndex}
-                              className={`p-4 rounded-xl border-2 ${
+                              className={`p-4 border-2 ${
                                 isCorrect
-                                  ? "border-green-500 bg-green-50"
+                                  ? "border-cutout-red bg-cutout-yellow/10"
                                   : isUserAnswer
-                                  ? "border-red-500 bg-red-50"
-                                  : "border-gray-200 bg-gray-50"
+                                  ? "border-ink/30 bg-ink/5"
+                                  : "border-ink/10 bg-paper"
                               }`}
                             >
                               <div className="flex items-center gap-3">
                                 {isCorrect && (
-                                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                  <CheckCircle className="w-5 h-5 text-cutout-red flex-shrink-0" />
                                 )}
                                 {isUserAnswer && !isCorrect && (
-                                  <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                                  <XCircle className="w-5 h-5 text-ink/40 flex-shrink-0" />
                                 )}
                                 <span
-                                  className={`flex-1 font-medium ${
+                                  className={`flex-1 font-body ${
                                     isCorrect
-                                      ? "text-green-900"
+                                      ? "text-ink font-medium"
                                       : isUserAnswer
-                                      ? "text-red-900"
-                                      : "text-gray-700"
+                                      ? "text-ink/50"
+                                      : "text-ink/40"
                                   }`}
                                 >
                                   {option}
                                 </span>
                                 {isCorrect && (
-                                  <span className="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded">
-                                    Correct Answer
+                                  <span
+                                    className="font-typewriter text-[9px] uppercase tracking-wider bg-cutout-red text-paper px-2 py-0.5"
+                                    style={{ transform: "rotate(1deg)" }}
+                                  >
+                                    Correct
                                   </span>
                                 )}
                                 {isUserAnswer && !isCorrect && (
-                                  <span className="text-xs font-semibold text-red-600 bg-red-100 px-2 py-1 rounded">
+                                  <span className="font-typewriter text-[9px] uppercase tracking-wider text-ink/40 border border-ink/20 px-2 py-0.5">
                                     Your Answer
                                   </span>
                                 )}
@@ -168,15 +185,16 @@ export const MissedQuestions = ({ questions, selectedAnswers }: MissedQuestionsP
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.2 }}
-                          className="bg-blue-50 rounded-xl p-4 border border-blue-200"
+                          className="bg-cutout-yellow/10 p-4 border-2 border-dashed border-ink/15"
+                          style={{ transform: "rotate(-0.3deg)" }}
                         >
                           <div className="flex items-start gap-3">
-                            <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <Lightbulb className="w-5 h-5 text-ink/60 flex-shrink-0 mt-0.5" />
                             <div className="flex-1">
-                              <h5 className="font-semibold text-blue-900 mb-1">
+                              <h5 className="font-typewriter text-xs uppercase tracking-wider text-ink/60 mb-1">
                                 Explanation
                               </h5>
-                              <p className="text-sm text-blue-800 leading-relaxed">
+                              <p className="font-body text-sm text-ink/70 leading-relaxed">
                                 {question.explanation}
                               </p>
                             </div>
