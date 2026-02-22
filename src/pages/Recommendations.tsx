@@ -123,13 +123,13 @@ const Recommendations = () => {
                     <div className="absolute w-14 h-4 bg-cutout-yellow/70 top-[-8px] left-6 z-10" style={{ transform: `rotate(${i % 2 === 0 ? -2 : 3}deg)` }} />
 
                     {/* Spotify */}
-                    <div className="aspect-square bg-ink/5">
+                    <div className="bg-ink/5" style={{ height: 352 }}>
                       <iframe
                         title={`Spotify: ${pick.title}`}
                         src={`https://open.spotify.com/embed/${pick.type}/${pick.spotifyId}?utm_source=generator&theme=0`}
                         width="100%"
                         height="100%"
-                        style={{ border: 0 }}
+                        style={{ border: 0, borderRadius: 0 }}
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         loading="lazy"
                       />

@@ -13,6 +13,8 @@ import {
   LogOut,
   Menu,
   X,
+  Mail,
+  Newspaper,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -25,6 +27,8 @@ const navItems = [
   { path: '/admin/videos', label: 'Videos', icon: Youtube },
   { path: '/admin/recommendations', label: 'Recommendations', icon: Star },
   { path: '/admin/trivia', label: 'Trivia', icon: HelpCircle },
+  { path: '/admin/contact', label: 'Messages', icon: Mail },
+  { path: '/admin/newsletter', label: 'Newsletter', icon: Newspaper },
 ];
 
 export default function AdminLayout() {
@@ -34,8 +38,8 @@ export default function AdminLayout() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      <div className="min-h-screen bg-ink flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cutout-red"></div>
       </div>
     );
   }
@@ -50,30 +54,30 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
+    <div className="min-h-screen bg-paper flex font-body">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-ink/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 transform transition-transform lg:transform-none ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-ink border-r-[3px] border-ink transform transition-transform lg:transform-none ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-            <Link to="/admin" className="flex items-center gap-2">
-              <Music className="w-8 h-8 text-purple-500" />
-              <span className="text-xl font-bold text-white">Admin</span>
+          <div className="p-4 border-b border-paper/10 flex items-center justify-between">
+            <Link to="/admin" className="flex items-center gap-2 no-underline">
+              <Music className="w-7 h-7 text-cutout-red" />
+              <span className="font-typewriter text-sm uppercase tracking-[2px] text-paper">TMS Admin</span>
             </Link>
             <button
-              className="lg:hidden text-gray-400 hover:text-white"
+              className="lg:hidden text-paper/50 hover:text-paper"
               onClick={() => setSidebarOpen(false)}
             >
               <X className="w-6 h-6" />
@@ -81,34 +85,34 @@ export default function AdminLayout() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
             {navItems.map(({ path, label, icon: Icon, exact }) => (
               <Link
                 key={path}
                 to={path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 font-typewriter text-xs uppercase tracking-wider transition-all duration-200 no-underline ${
                   isActive(path, exact)
-                    ? 'bg-purple-500/20 text-purple-400'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    ? 'bg-cutout-red text-paper'
+                    : 'text-paper/50 hover:text-paper hover:bg-paper/10'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
                 <span>{label}</span>
               </Link>
             ))}
           </nav>
 
           {/* User & Logout */}
-          <div className="p-4 border-t border-gray-700">
+          <div className="p-4 border-t border-paper/10">
             <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <p className="text-white font-medium">{user?.username}</p>
-                <p className="text-gray-400">{user?.role}</p>
+              <div>
+                <p className="font-typewriter text-xs text-paper uppercase tracking-wider">{user?.username}</p>
+                <p className="font-body text-[10px] text-paper/40">{user?.role}</p>
               </div>
               <button
                 onClick={logout}
-                className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 text-paper/40 hover:text-cutout-red hover:bg-paper/10 transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-5 h-5" />
@@ -121,10 +125,10 @@ export default function AdminLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Mobile header */}
-        <header className="lg:hidden bg-gray-800 border-b border-gray-700 p-4">
+        <header className="lg:hidden bg-ink border-b-[3px] border-ink p-4">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-gray-400 hover:text-white"
+            className="text-paper/60 hover:text-paper"
           >
             <Menu className="w-6 h-6" />
           </button>

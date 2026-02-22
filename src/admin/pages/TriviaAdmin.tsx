@@ -200,7 +200,7 @@ export default function TriviaAdmin() {
           type="button"
           onClick={handleDeleteAllResults}
           disabled={deletingResults}
-          className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 text-white text-sm rounded-lg transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-red-700 hover:bg-red-800 disabled:bg-red-700/30 text-paper font-typewriter text-xs uppercase tracking-wider transition-colors flex items-center gap-2"
         >
           <Trash2 className="w-4 h-4" />
           {deletingResults ? 'Deleting...' : 'Delete All Quiz Results'}
@@ -234,14 +234,14 @@ export default function TriviaAdmin() {
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-ink/70">
                 Options <span className="text-red-400">*</span>
               </label>
               {formData.options.length < 6 && (
                 <button
                   type="button"
                   onClick={addOption}
-                  className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                  className="text-sm text-ink/50 hover:text-ink flex items-center gap-1"
                 >
                   <Plus className="w-4 h-4" />
                   Add Option
@@ -256,7 +256,7 @@ export default function TriviaAdmin() {
                     name="correctAnswer"
                     checked={formData.correctAnswer === index}
                     onChange={() => updateField('correctAnswer', index)}
-                    className="w-4 h-4 text-purple-500 bg-gray-700 border-gray-600 focus:ring-purple-500"
+                    className="w-4 h-4 text-ink bg-paper border-ink/20 focus:ring-ink"
                     title="Mark as correct answer"
                   />
                   <input
@@ -264,13 +264,13 @@ export default function TriviaAdmin() {
                     value={option}
                     onChange={(e) => updateOption(index, e.target.value)}
                     placeholder={`Option ${index + 1}`}
-                    className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="flex-1 bg-paper border border-ink/20 rounded-lg px-4 py-2 text-ink placeholder-ink/30 focus:outline-none focus:ring-2 focus:ring-ink"
                   />
                   {formData.options.length > 2 && (
                     <button
                       type="button"
                       onClick={() => removeOption(index)}
-                      className="p-2 text-gray-400 hover:text-red-400"
+                      className="p-2 text-ink/30 hover:text-red-600"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -278,7 +278,7 @@ export default function TriviaAdmin() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink/40 mt-1">
               Select the radio button next to the correct answer
             </p>
           </div>
@@ -319,14 +319,14 @@ export default function TriviaAdmin() {
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+              className="px-4 py-2 font-typewriter text-xs uppercase tracking-wider text-ink/50 hover:text-ink transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-600/50 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-ink hover:bg-ink/80 disabled:bg-ink/30 text-paper font-typewriter text-xs uppercase tracking-wider transition-colors"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>

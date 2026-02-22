@@ -31,18 +31,21 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70"
+        className="absolute inset-0 bg-ink/70"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-xl">
+      <div className="relative bg-paper-white w-full max-w-2xl max-h-[90vh] overflow-hidden border-[3px] border-ink shadow-hard">
+        {/* Tape strip */}
+        <div className="absolute w-16 h-5 bg-cutout-yellow/70 top-[-10px] left-8 z-10" style={{ transform: 'rotate(-2deg)' }} />
+
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-semibold text-white">{title}</h2>
+        <div className="flex items-center justify-between p-4 border-b-2 border-ink/10">
+          <h2 className="font-display text-xl text-ink">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-1.5 text-ink/40 hover:text-ink hover:bg-ink/5 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

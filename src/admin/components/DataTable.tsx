@@ -49,9 +49,9 @@ export default function DataTable<T extends { _id?: string }>({
 
     if (typeof value === 'boolean') {
       return value ? (
-        <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-400">Yes</span>
+        <span className="inline-block font-typewriter text-[10px] uppercase tracking-wider px-2 py-0.5 bg-green-100 text-green-800 border border-green-300">Yes</span>
       ) : (
-        <span className="px-2 py-1 text-xs rounded-full bg-gray-500/20 text-gray-400">No</span>
+        <span className="inline-block font-typewriter text-[10px] uppercase tracking-wider px-2 py-0.5 bg-ink/5 text-ink/40 border border-ink/10">No</span>
       );
     }
 
@@ -61,7 +61,7 @@ export default function DataTable<T extends { _id?: string }>({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cutout-red"></div>
       </div>
     );
   }
@@ -69,19 +69,19 @@ export default function DataTable<T extends { _id?: string }>({
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-white">{title}</h1>
+        <h1 className="font-display text-2xl text-ink">{title}</h1>
         <button
           onClick={onAdd}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-ink text-paper font-typewriter text-xs uppercase tracking-wider border-[3px] border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 transition-all duration-200"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           Add New
         </button>
       </div>
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ink/30" />
         <input
           type="text"
           placeholder="Search..."
@@ -90,46 +90,46 @@ export default function DataTable<T extends { _id?: string }>({
             setSearch(e.target.value);
             setPage(1);
           }}
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full bg-paper-white border-2 border-ink/20 pl-10 pr-4 py-2.5 font-body text-sm text-ink placeholder-ink/30 focus:outline-none focus:border-cutout-red transition-colors"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+      <div className="bg-paper-white border-2 border-ink/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-700/50">
+            <thead className="bg-ink/5 border-b-2 border-ink/10">
               <tr>
                 {columns.map((col) => (
                   <th
                     key={String(col.key)}
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-300"
+                    className="px-4 py-3 text-left font-typewriter text-[10px] uppercase tracking-wider text-ink/60"
                   >
                     {col.label}
                   </th>
                 ))}
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">
+                <th className="px-4 py-3 text-right font-typewriter text-[10px] uppercase tracking-wider text-ink/60">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-ink/10">
               {paginatedData.length === 0 ? (
                 <tr>
                   <td
                     colSpan={columns.length + 1}
-                    className="px-4 py-8 text-center text-gray-400"
+                    className="px-4 py-8 text-center font-body text-sm text-ink/40"
                   >
                     No data found
                   </td>
                 </tr>
               ) : (
                 paginatedData.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-700/50">
+                  <tr key={item._id} className="hover:bg-cutout-yellow/10 transition-colors">
                     {columns.map((col) => (
                       <td
                         key={`${item._id}-${String(col.key)}`}
-                        className="px-4 py-3 text-sm text-gray-300"
+                        className="px-4 py-3 font-body text-sm text-ink/80"
                       >
                         {col.render ? col.render(item) : getValue(item, String(col.key))}
                       </td>
@@ -138,14 +138,14 @@ export default function DataTable<T extends { _id?: string }>({
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => onEdit(item)}
-                          className="p-1.5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded transition-colors"
+                          className="p-1.5 text-ink/30 hover:text-ink hover:bg-ink/5 transition-colors"
                           title="Edit"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => item._id && onDelete(item._id)}
-                          className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                          className="p-1.5 text-ink/30 hover:text-cutout-red hover:bg-cutout-red/5 transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -161,8 +161,8 @@ export default function DataTable<T extends { _id?: string }>({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-700">
-            <p className="text-sm text-gray-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t-2 border-ink/10">
+            <p className="font-typewriter text-[10px] uppercase tracking-wider text-ink/40">
               Showing {(page - 1) * perPage + 1} to{' '}
               {Math.min(page * perPage, filteredData.length)} of {filteredData.length}
             </p>
@@ -170,17 +170,17 @@ export default function DataTable<T extends { _id?: string }>({
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="p-1.5 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1.5 text-ink/40 hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <span className="text-sm text-gray-300">
+              <span className="font-typewriter text-xs text-ink/60">
                 {page} / {totalPages}
               </span>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page === totalPages}
-                className="p-1.5 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1.5 text-ink/40 hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

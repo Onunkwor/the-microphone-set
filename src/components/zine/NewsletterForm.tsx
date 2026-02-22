@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { newsletterApi } from "@/services/api";
 
 interface NewsletterFormProps {
   className?: string;
@@ -6,11 +8,22 @@ interface NewsletterFormProps {
 
 export const NewsletterForm = ({ className = "" }: NewsletterFormProps) => {
   const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Newsletter signup:", email);
-    setEmail("");
+    setIsSubmitting(true);
+    setStatus(null);
+    try {
+      const result = await newsletterApi.subscribe(email);
+      setStatus({ type: "success", message: result.message });
+      setEmail("");
+    } catch (error) {
+      setStatus({ type: "error", message: error instanceof Error ? error.message : "Failed to subscribe. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -41,22 +54,39 @@ export const NewsletterForm = ({ className = "" }: NewsletterFormProps) => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com"
-          className="flex-1 px-4 py-3 bg-paper-white border-2 border-ink font-typewriter text-sm placeholder:text-ink/30 focus:outline-none focus:border-cutout-red transition-colors"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-ink text-paper font-typewriter text-sm uppercase tracking-wider px-6 py-3 border-3 border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 transition-all duration-200"
-          style={{ transform: "rotate(-1deg)" }}
-        >
-          Subscribe
-        </button>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="your@email.com"
+            className="flex-1 px-4 py-3 bg-paper-white border-2 border-ink font-typewriter text-sm placeholder:text-ink/30 focus:outline-none focus:border-cutout-red transition-colors"
+            required
+            disabled={isSubmitting}
+          />
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`font-typewriter text-sm uppercase tracking-wider px-6 py-3 border-3 transition-all duration-200 flex items-center justify-center gap-2 ${
+              isSubmitting
+                ? "bg-ink/50 text-paper/50 border-ink/50 cursor-not-allowed"
+                : "bg-ink text-paper border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5"
+            }`}
+            style={{ transform: "rotate(-1deg)" }}
+          >
+            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isSubmitting ? "Subscribing..." : "Subscribe"}
+          </button>
+        </div>
+
+        {status && (
+          <p className={`font-typewriter text-xs text-center tracking-wider ${
+            status.type === "success" ? "text-green-700" : "text-cutout-red"
+          }`}>
+            {status.message}
+          </p>
+        )}
       </form>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Mail, MessageSquare, Phone, MapPin } from "lucide-react";
+import { Mail, MessageSquare, Phone, MapPin, Loader2, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { contactApi } from "@/services/api";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,10 +10,22 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    try {
+      const result = await contactApi.submit(formData);
+      setSubmitStatus({ type: "success", message: result.message });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      setSubmitStatus({ type: "error", message: error instanceof Error ? error.message : "Failed to send message. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -140,12 +153,29 @@ const Contact = () => {
                 />
               </div>
 
+              {submitStatus && (
+                <div className={`p-4 border-2 border-dashed font-body text-sm flex items-center gap-3 ${
+                  submitStatus.type === "success"
+                    ? "border-green-600/30 bg-green-50 text-green-800"
+                    : "border-cutout-red/30 bg-cutout-red/5 text-cutout-red"
+                }`}>
+                  {submitStatus.type === "success" && <CheckCircle className="w-5 h-5 shrink-0" />}
+                  {submitStatus.message}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 bg-ink text-paper border-[3px] border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                disabled={isSubmitting}
+                className={`w-full font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 border-[3px] transition-all duration-200 flex items-center justify-center gap-2 ${
+                  isSubmitting
+                    ? "bg-ink/50 text-paper/50 border-ink/50 cursor-not-allowed"
+                    : "bg-ink text-paper border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 cursor-pointer"
+                }`}
                 style={{ transform: "rotate(-0.5deg)" }}
               >
-                Send Message
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>

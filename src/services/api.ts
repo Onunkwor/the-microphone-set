@@ -225,6 +225,56 @@ export const triviaApi = {
   getRandom: (count: number = 10) => fetchApi<Trivia[]>(`/trivia/random/${count}`),
 };
 
+// Contact API
+export interface ContactMessage {
+  _id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export const contactApi = {
+  submit: (data: { name: string; email: string; subject: string; message: string }) =>
+    fetchApi<{ message: string; id: string }>('/contact', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getAll: () => fetchApi<ContactMessage[]>('/contact'),
+  markRead: (id: string) => fetchApi<ContactMessage>(`/contact/${id}/read`, { method: 'PUT' }),
+  delete: (id: string) => fetchApi<{ message: string }>(`/contact/${id}`, { method: 'DELETE' }),
+};
+
+// Newsletter API
+export interface NewsletterSubscriber {
+  _id: string;
+  email: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface NewsletterStats {
+  total: number;
+  active: number;
+  inactive: number;
+}
+
+export const newsletterApi = {
+  subscribe: (email: string) =>
+    fetchApi<{ message: string }>('/newsletter/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  getAll: (params?: { active?: string }) => {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    return fetchApi<NewsletterSubscriber[]>(`/newsletter${query}`);
+  },
+  getStats: () => fetchApi<NewsletterStats>('/newsletter/stats'),
+  delete: (id: string) => fetchApi<{ message: string }>(`/newsletter/${id}`, { method: 'DELETE' }),
+};
+
 export const leaderboardApi = {
   submit: (data: QuizSubmission) =>
     fetchApi<QuizSubmissionResponse>('/leaderboard/submit', {

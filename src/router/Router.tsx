@@ -24,6 +24,8 @@ import PlaylistsAdmin from "@/admin/pages/PlaylistsAdmin";
 import VideosAdmin from "@/admin/pages/VideosAdmin";
 import RecommendationsAdmin from "@/admin/pages/RecommendationsAdmin";
 import TriviaAdmin from "@/admin/pages/TriviaAdmin";
+import ContactAdmin from "@/admin/pages/ContactAdmin";
+import NewsletterAdmin from "@/admin/pages/NewsletterAdmin";
 
 export const AppRouter = () => {
   const router = createBrowserRouter([
@@ -114,6 +116,14 @@ export const AppRouter = () => {
         {
           path: "trivia",
           element: <TriviaAdmin />,
+        },
+        {
+          path: "contact",
+          element: <ContactAdmin />,
+        },
+        {
+          path: "newsletter",
+          element: <NewsletterAdmin />,
         },
       ],
     },
