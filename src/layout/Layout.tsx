@@ -283,7 +283,16 @@ const Layout = () => {
               {new Date().getFullYear()} The Microphone Set. All rights
               reserved.
             </p>
-            <div className="flex gap-6">
+            <div className="flex items-center gap-6">
+              <a
+                href="https://onunkwor.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block font-typewriter text-[10px] uppercase tracking-[2px] px-3 py-1.5 border border-cutout-red/40 text-cutout-red/70 hover:bg-cutout-red hover:text-paper transition-all duration-200"
+                style={{ transform: "rotate(-1deg)" }}
+              >
+                Crafted by Raphael
+              </a>
               <Link
                 to="/privacy"
                 className="font-typewriter text-xs text-paper/30 hover:text-paper/60 transition-colors tracking-wider"
