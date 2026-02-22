@@ -555,7 +555,7 @@ const Trivia = () => {
             </h1>
 
             <p className="font-body text-ink/60">
-              Answer {questions.length} questions and compete for a spot on the leaderboard!
+              Test your music knowledge and compete for a spot on the leaderboard!
             </p>
           </div>
 

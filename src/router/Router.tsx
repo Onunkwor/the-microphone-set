@@ -7,6 +7,8 @@ import Blog from "@/pages/Blog";
 import Interviews from "@/pages/Interviews";
 import Recommendations from "@/pages/Recommendations";
 import Contact from "@/pages/Contact";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -61,6 +63,14 @@ export const AppRouter = () => {
         {
           path: "contact",
           element: <Contact />,
+        },
+        {
+          path: "privacy",
+          element: <Privacy />,
+        },
+        {
+          path: "terms",
+          element: <Terms />,
         },
       ],
     },
