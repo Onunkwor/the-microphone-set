@@ -491,6 +491,45 @@ const Trivia = () => {
     );
   }
 
+  // ===== NO TRIVIA AVAILABLE =====
+  if (questions.length === 0) {
+    return (
+      <div className="bg-paper text-ink min-h-screen flex items-center justify-center px-6">
+        <div className="max-w-md w-full text-center">
+          <div
+            className="relative bg-paper-white p-10 border-2 border-ink/10"
+            style={{ transform: "rotate(-0.5deg)" }}
+          >
+            <div className="absolute w-16 h-5 bg-cutout-yellow/70 top-[-10px] left-8 z-10" style={{ transform: "rotate(-2deg)" }} />
+
+            <div
+              className="inline-flex w-20 h-20 border-4 border-ink/20 rounded-full items-center justify-center mb-6"
+              style={{ transform: "rotate(10deg)" }}
+            >
+              <span className="text-3xl">🎤</span>
+            </div>
+
+            <h2 className="font-display text-3xl text-ink mb-3">
+              No Trivia Available
+            </h2>
+            <p className="font-body text-ink/50 mb-8">
+              There are no trivia questions available right now. Check back later for new challenges!
+            </p>
+
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 bg-ink text-paper border-[3px] border-ink shadow-hard-red hover:shadow-hard-red-lg hover:-translate-y-0.5 transition-all duration-200 no-underline"
+              style={{ transform: "rotate(-0.5deg)" }}
+            >
+              <ArrowRight className="w-4 h-4 rotate-180" />
+              Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ===== NAME PROMPT SCREEN =====
   if (showNamePrompt) {
     return (

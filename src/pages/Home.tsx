@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { playlistsApi, blogsApi, type Playlist, type Blog } from "@/services/api";
+import { playlistsApi, type Playlist } from "@/services/api";
 import { GenreTag } from "@/components/zine/GenreTag";
 import { NewsletterForm } from "@/components/zine/NewsletterForm";
 
@@ -32,7 +32,7 @@ const fallbackPlaylists: FeaturedPlaylist[] = [
   { id: "37i9dQZF1DXcBWIGoYBM5M", title: "Today's Top Hits", description: "The hottest tracks right now", genre: "Pop", type: "playlist" },
 ];
 
-const fallbackArticles: ArticleDisplay[] = [
+const articles: ArticleDisplay[] = [
   {
     id: 1, title: "The 'Philip Uzo and The Electric Revival' Live Show",
     excerpt: "Something inside me was revived at the show. Philip Uzo positively redefined the way I perceive live music.",
@@ -62,9 +62,7 @@ const genreVariants: Array<"outline" | "yellow" | "red" | "ink"> = ["outline", "
 
 const Home = () => {
   const [featuredPlaylists, setFeaturedPlaylists] = useState<FeaturedPlaylist[]>(fallbackPlaylists);
-  const [articles, setArticles] = useState<ArticleDisplay[]>(fallbackArticles);
   const [isLoadingPlaylists, setIsLoadingPlaylists] = useState(true);
-  const [isLoadingArticles, setIsLoadingArticles] = useState(true);
 
   useEffect(() => {
     const fetchPlaylists = async () => {
@@ -96,23 +94,7 @@ const Home = () => {
       finally { setIsLoadingPlaylists(false); }
     };
 
-    const fetchArticles = async () => {
-      try {
-        const data = await blogsApi.getAll();
-        if (data && data.length > 0) {
-          const mapped: ArticleDisplay[] = data.slice(0, 3).map((item: Blog, index: number) => ({
-            id: index + 1, title: item.title, excerpt: item.excerpt, category: item.category,
-            author: item.author, date: item.createdAt || new Date().toISOString(),
-            image: item.image, url: item.externalUrl, featured: item.featured,
-          }));
-          setArticles(mapped);
-        }
-      } catch (error) { console.log("Using fallback articles:", error); }
-      finally { setIsLoadingArticles(false); }
-    };
-
     fetchPlaylists();
-    fetchArticles();
   }, []);
 
   return (
@@ -535,13 +517,13 @@ const Home = () => {
                     />
 
                     {/* Spotify embed */}
-                    <div className="aspect-square bg-ink/5">
+                    <div className="bg-ink/5" style={{ height: 352 }}>
                       <iframe
                         title={`Spotify: ${playlist.title}`}
                         src={`https://open.spotify.com/embed/${playlist.type}/${playlist.id}?utm_source=generator&theme=0`}
                         width="100%"
                         height="100%"
-                        style={{ border: 0 }}
+                        style={{ border: 0, borderRadius: 0 }}
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         loading="lazy"
                       />
@@ -591,14 +573,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {isLoadingArticles
-              ? [...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-paper border-2 border-ink/10 h-80 animate-pulse"
-                  />
-                ))
-              : articles.map((article, i) => (
+            {articles.map((article, i) => (
                   <a
                     key={article.id}
                     href={article.url}
@@ -688,58 +663,6 @@ const Home = () => {
                 />
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ====== TRIVIA CTA ====== */}
-      <section className="py-20 px-6 md:px-12 bg-ink relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 2px 2px, #f5f0e8 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
-        <div className="max-w-4xl mx-auto relative z-10 text-center">
-          <div
-            className="inline-flex items-center justify-center w-20 h-20 border-[3px] border-cutout-red rounded-full font-typewriter text-[9px] uppercase text-cutout-red text-center leading-tight tracking-wider mb-8"
-            style={{ transform: "rotate(15deg)" }}
-          >
-            Quiz
-            <br />
-            Time
-          </div>
-          <h2 className="font-display text-4xl md:text-5xl text-paper mb-6">
-            Test Your
-            <br />
-            <span
-              className="inline-block bg-cutout-red text-paper px-4 py-1 mt-2"
-              style={{ transform: "rotate(-1deg)" }}
-            >
-              Music Knowledge
-            </span>
-          </h2>
-          <p className="font-body text-paper/50 text-lg mb-10 max-w-xl mx-auto">
-            Think you know your music? Take our trivia challenge and compete on the leaderboard.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/trivia"
-              className="inline-block font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 bg-cutout-red text-paper border-[3px] border-cutout-red shadow-[5px_5px_0_rgba(245,240,232,0.2)] hover:-translate-y-0.5 transition-all duration-200 no-underline"
-              style={{ transform: "rotate(-1deg)" }}
-            >
-              Take Music Quiz
-            </Link>
-            <Link
-              to="/trivia/leaderboard"
-              className="inline-block font-typewriter text-sm uppercase tracking-[2px] px-8 py-4 bg-transparent text-paper border-[3px] border-paper/30 hover:border-paper hover:bg-paper/10 transition-all duration-200 no-underline"
-              style={{ transform: "rotate(0.5deg)" }}
-            >
-              View Leaderboard
-            </Link>
           </div>
         </div>
       </section>
