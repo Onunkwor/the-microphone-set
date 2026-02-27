@@ -91,6 +91,34 @@ const Trivia = () => {
     }
   }, []);
 
+  // Prevent copying, screenshots, and right-click
+  useEffect(() => {
+    const preventCopy = (e: ClipboardEvent) => e.preventDefault();
+    const preventContextMenu = (e: MouseEvent) => e.preventDefault();
+    const preventKeyShortcuts = (e: KeyboardEvent) => {
+      // Block PrintScreen
+      if (e.key === "PrintScreen") {
+        e.preventDefault();
+      }
+      // Block Ctrl/Cmd + C, A, U, S, P
+      if ((e.ctrlKey || e.metaKey) && ["c", "a", "u", "s", "p"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("copy", preventCopy);
+    document.addEventListener("cut", preventCopy);
+    document.addEventListener("contextmenu", preventContextMenu);
+    document.addEventListener("keydown", preventKeyShortcuts);
+
+    return () => {
+      document.removeEventListener("copy", preventCopy);
+      document.removeEventListener("cut", preventCopy);
+      document.removeEventListener("contextmenu", preventContextMenu);
+      document.removeEventListener("keydown", preventKeyShortcuts);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -369,7 +397,7 @@ const Trivia = () => {
   // ===== RESULTS SCREEN =====
   if (isComplete) {
     return (
-      <div className="bg-paper text-ink overflow-hidden min-h-screen">
+      <div className="bg-paper text-ink overflow-hidden min-h-screen select-none">
         {percentage >= 80 && <Confetti />}
 
         <div className="relative py-20 px-6 md:px-12">
@@ -493,7 +521,7 @@ const Trivia = () => {
   // ===== LOADING SCREEN =====
   if (isLoading) {
     return (
-      <div className="bg-paper text-ink min-h-screen flex items-center justify-center">
+      <div className="bg-paper text-ink min-h-screen flex items-center justify-center select-none">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-ink animate-spin mx-auto mb-4" />
           <p className="font-typewriter text-sm uppercase tracking-wider text-ink/60">Loading questions...</p>
@@ -505,7 +533,7 @@ const Trivia = () => {
   // ===== NO TRIVIA AVAILABLE =====
   if (questions.length === 0) {
     return (
-      <div className="bg-paper text-ink min-h-screen flex items-center justify-center px-6">
+      <div className="bg-paper text-ink min-h-screen flex items-center justify-center px-6 select-none">
         <div className="max-w-md w-full text-center">
           <div
             className="relative bg-paper-white p-10 border-2 border-ink/10"
@@ -544,7 +572,7 @@ const Trivia = () => {
   // ===== NAME PROMPT SCREEN =====
   if (showNamePrompt) {
     return (
-      <div className="bg-paper text-ink min-h-screen flex items-center justify-center px-6">
+      <div className="bg-paper text-ink min-h-screen flex items-center justify-center px-6 select-none">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <span
@@ -621,7 +649,7 @@ const Trivia = () => {
 
   // ===== QUIZ SCREEN =====
   return (
-    <div className="bg-paper text-ink overflow-hidden">
+    <div className="bg-paper text-ink overflow-hidden select-none">
       {/* Hero */}
       <section className="pt-16 pb-8 px-6 md:px-12">
         <div className="max-w-2xl mx-auto text-center">
