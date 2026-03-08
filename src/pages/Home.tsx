@@ -110,7 +110,7 @@ const Home = () => {
             className="inline-block bg-ink text-paper font-typewriter text-[11px] uppercase tracking-[3px] px-4 py-1.5 mb-7"
             style={{ transform: "rotate(-2deg)" }}
           >
-            Music Discovery Reimagined
+            Oh You Like Music Too?
           </motion.div>
 
           {/* Headline */}
@@ -149,8 +149,8 @@ const Home = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="font-body text-base leading-relaxed text-ink/60 max-w-[440px] mb-9 border-l-[3px] border-ink pl-4"
           >
-            We talk about music, share playlists, interview artists, and help
-            you discover new sounds that resonate with your soul.
+            Oh you like music too? We talk about it, write about it, share
+            it, and live it — where music lovers discover, connect, and celebrate sound.
           </motion.p>
 
           {/* Genre Tags */}
@@ -347,7 +347,7 @@ const Home = () => {
                 className="inline-block bg-cutout-red text-paper px-5 py-2 mt-2 relative cutout-border"
                 style={{ transform: "rotate(-1.5deg)" }}
               >
-                Music?
+                Music Too?
               </span>
             </motion.h2>
             <motion.p

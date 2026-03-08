@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { NewsletterForm } from "@/components/zine/NewsletterForm";
+import { blogsApi, type Blog as BlogType } from "@/services/api";
 
 interface Article {
-  id: number;
+  id: number | string;
   title: string;
   excerpt: string;
   category: string;
@@ -14,7 +16,7 @@ interface Article {
   featured: boolean;
 }
 
-const articles: Article[] = [
+const staticArticles: Article[] = [
   {
     id: 1, title: "The 'Philip Uzo and The Electric Revival' Live Show",
     excerpt: "Something inside me was revived at the 'Philip Uzo and The Electric Revival' show. Philip Uzo positively redefined the way I perceive live music.",
@@ -60,6 +62,47 @@ const articles: Article[] = [
 ];
 
 const Blog = () => {
+  const [serverArticles, setServerArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const data = await blogsApi.getAll();
+        if (data && data.length > 0) {
+          const mapped: Article[] = data
+            .filter((blog: BlogType) => blog.published)
+            .map((blog: BlogType) => ({
+              id: blog._id || blog.title,
+              title: blog.title,
+              excerpt: blog.excerpt,
+              category: blog.category,
+              author: blog.author,
+              date: blog.createdAt || new Date().toISOString(),
+              readTime: `${Math.max(3, Math.ceil(blog.content.length / 1000))} min read`,
+              image: blog.image,
+              url: blog.externalUrl || "#",
+              featured: blog.featured,
+            }));
+          setServerArticles(mapped);
+        }
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+
+  const allArticles = [...serverArticles, ...staticArticles];
+  // Deduplicate by title (server blogs take priority)
+  const seen = new Set<string>();
+  const articles = allArticles.filter((a) => {
+    const key = a.title.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
   const featuredArticle = articles.find((a) => a.featured) || articles[0];
   const restArticles = articles.filter((a) => a.id !== featuredArticle?.id);
 

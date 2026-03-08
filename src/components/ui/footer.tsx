@@ -42,9 +42,9 @@ export const Footer = () => {
               </div>
             </Link>
             <p className="text-gray-600 max-w-md mb-6">
-              Discover your next favorite sound. We talk about music, share
-              playlists, interview artists, and help you discover new sounds
-              that resonate with your soul.
+              Oh you like music too? We talk about it, write about it, share
+              it, and live it. This is The Microphone Set — where music lovers
+              come to discover, connect, and celebrate sound.
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (

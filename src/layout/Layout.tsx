@@ -184,9 +184,9 @@ const Layout = () => {
                 </span>
               </Link>
               <p className="font-body text-paper/50 text-sm leading-relaxed max-w-sm mb-8 border-l-2 border-cutout-red pl-4">
-                Discover your next favorite sound. We talk about music, share
-                playlists, interview artists, and help you discover new sounds
-                that resonate with your soul.
+                Oh you like music too? We talk about it, write about it, share
+                it, and live it. This is The Microphone Set — where music lovers
+                come to discover, connect, and celebrate sound.
               </p>
               {/* Stamp */}
               <div
