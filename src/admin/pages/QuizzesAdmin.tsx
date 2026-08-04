@@ -24,15 +24,44 @@ export default function QuizzesAdmin() {
   const [saving, setSaving] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [deletingResults, setDeletingResults] = useState(false);
+  const [legacyCount, setLegacyCount] = useState(0);
+  const [importing, setImporting] = useState(false);
 
   const fetchData = async () => {
     try {
-      const data = await quizApi.getAll();
+      const [data, legacy] = await Promise.all([
+        quizApi.getAll(),
+        quizApi.getLegacyCount().catch(() => ({ count: 0 })),
+      ]);
       setQuizzes(data);
+      setLegacyCount(legacy.count);
     } catch (error) {
       console.error('Failed to fetch quizzes:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleImportLegacy = async () => {
+    const title = prompt(
+      `Import your ${legacyCount} existing question(s) into a quiz. Name it:`,
+      'Imported Questions'
+    );
+    if (title === null) return;
+    setImporting(true);
+    try {
+      const { importedCount } = await quizApi.importLegacy({
+        title: title.trim() || 'Imported Questions',
+        publish: true,
+      });
+      alert(`Imported ${importedCount} question(s) into a live quiz.`);
+      setIsLoading(true);
+      await fetchData();
+    } catch (error: any) {
+      console.error('Failed to import questions:', error);
+      alert(`Failed to import questions: ${error.message || 'Unknown error'}`);
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -185,6 +214,27 @@ export default function QuizzesAdmin() {
           </button>
         </div>
       </div>
+
+      {legacyCount > 0 && (
+        <div className="mb-6 bg-cutout-yellow/20 border-2 border-cutout-yellow p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="font-typewriter text-xs uppercase tracking-wider text-ink">
+              {legacyCount} question{legacyCount === 1 ? '' : 's'} from before quizzes existed
+            </p>
+            <p className="font-body text-sm text-ink/60 mt-1">
+              They're still live on the site but not grouped into a quiz yet. Import them into a quiz to manage them here.
+            </p>
+          </div>
+          <button
+            onClick={handleImportLegacy}
+            disabled={importing}
+            className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 bg-ink text-paper font-typewriter text-xs uppercase tracking-wider hover:bg-ink/80 disabled:bg-ink/30 transition-colors"
+          >
+            {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            {importing ? 'Importing...' : 'Import into a quiz'}
+          </button>
+        </div>
+      )}
 
       {quizzes.length === 0 ? (
         <div className="bg-paper-white border-2 border-ink/10 p-12 text-center">

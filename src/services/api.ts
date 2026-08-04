@@ -256,6 +256,13 @@ export const quizApi = {
   retire: (id: string) => fetchApi<Quiz>(`/quiz/${id}/retire`, { method: 'POST' }),
   delete: (id: string) =>
     fetchApi<{ message: string }>(`/quiz/${id}`, { method: 'DELETE' }),
+  // Legacy import: bundle questions created before quizzes existed
+  getLegacyCount: () => fetchApi<{ count: number }>('/quiz/legacy/count'),
+  importLegacy: (data: { title: string; publish: boolean }) =>
+    fetchApi<{ quiz: Quiz; importedCount: number }>('/quiz/legacy/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 // Contact API
