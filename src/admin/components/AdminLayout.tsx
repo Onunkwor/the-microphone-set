@@ -26,7 +26,7 @@ const navItems = [
   { path: '/admin/playlists', label: 'Playlists', icon: PlayCircle },
   { path: '/admin/videos', label: 'Videos', icon: Youtube },
   { path: '/admin/recommendations', label: 'Recommendations', icon: Star },
-  { path: '/admin/trivia', label: 'Trivia', icon: HelpCircle },
+  { path: '/admin/quizzes', label: 'Quizzes', icon: HelpCircle },
   { path: '/admin/contact', label: 'Messages', icon: Mail },
   { path: '/admin/newsletter', label: 'Newsletter', icon: Newspaper },
 ];

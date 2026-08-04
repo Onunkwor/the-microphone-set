@@ -3,7 +3,7 @@ import { Share2, RotateCcw, Trophy, ArrowRight, Loader2 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { triviaApi, leaderboardApi, type Trivia as TriviaType } from "@/services/api";
+import { quizApi, leaderboardApi, type Trivia as TriviaType } from "@/services/api";
 import { MissedQuestions } from "@/components/trivia/MissedQuestions";
 import { LeaderboardPreview } from "@/components/trivia/LeaderboardPreview";
 import { Confetti } from "@/components/trivia/Confetti";
@@ -122,7 +122,7 @@ const Trivia = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const data = await triviaApi.getAll();
+        const { questions: data } = await quizApi.getLive();
         if (data && data.length > 0) {
           const shuffled = [...data].sort(() => Math.random() - 0.5);
           setQuestions(shuffled);

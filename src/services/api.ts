@@ -161,7 +161,24 @@ export interface Trivia {
   difficulty: 'easy' | 'medium' | 'hard';
   explanation: string;
   active: boolean;
+  quiz?: string | null;
   expiresAt?: string;
+}
+
+export interface Quiz {
+  _id?: string;
+  title: string;
+  description?: string;
+  isLive?: boolean;
+  publishedAt?: string | null;
+  questionCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface LiveQuizResponse {
+  quiz: Quiz | null;
+  questions: Trivia[];
 }
 
 // Leaderboard interfaces
@@ -223,6 +240,22 @@ export const recommendationsApi = createCrudApi<Recommendation>('recommendations
 export const triviaApi = {
   ...createCrudApi<Trivia>('trivia'),
   getRandom: (count: number = 10) => fetchApi<Trivia[]>(`/trivia/random/${count}`),
+};
+
+export const quizApi = {
+  // Public: the currently live quiz and its questions
+  getLive: () => fetchApi<LiveQuizResponse>('/quiz/live'),
+  // Admin
+  getAll: () => fetchApi<Quiz[]>('/quiz'),
+  getById: (id: string) => fetchApi<LiveQuizResponse>(`/quiz/${id}`),
+  create: (data: { title: string; description?: string }) =>
+    fetchApi<Quiz>('/quiz', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: { title: string; description?: string }) =>
+    fetchApi<Quiz>(`/quiz/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  publish: (id: string) => fetchApi<Quiz>(`/quiz/${id}/publish`, { method: 'POST' }),
+  retire: (id: string) => fetchApi<Quiz>(`/quiz/${id}/retire`, { method: 'POST' }),
+  delete: (id: string) =>
+    fetchApi<{ message: string }>(`/quiz/${id}`, { method: 'DELETE' }),
 };
 
 // Contact API

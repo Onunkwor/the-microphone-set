@@ -54,7 +54,7 @@ export default function Dashboard() {
           { label: 'Playlists', count: playlists.length, icon: PlayCircle, path: '/admin/playlists' },
           { label: 'Videos', count: videos.length, icon: Youtube, path: '/admin/videos' },
           { label: 'Recommendations', count: recommendations.length, icon: Star, path: '/admin/recommendations' },
-          { label: 'Trivia', count: trivia.length, icon: HelpCircle, path: '/admin/trivia' },
+          { label: 'Trivia', count: trivia.length, icon: HelpCircle, path: '/admin/quizzes' },
         ]);
       } catch (error) {
         console.error('Failed to fetch stats:', error);
@@ -113,7 +113,7 @@ export default function Dashboard() {
             { to: '/admin/playlists', icon: PlayCircle, label: 'Add New Playlist' },
             { to: '/admin/videos', icon: Youtube, label: 'Add New Video' },
             { to: '/admin/interviews', icon: Mic2, label: 'Add New Interview' },
-            { to: '/admin/trivia', icon: HelpCircle, label: 'Add Trivia Question' },
+            { to: '/admin/quizzes', icon: HelpCircle, label: 'Manage Quizzes' },
             { to: '/admin/contact', icon: Mail, label: 'View Messages' },
             { to: '/admin/newsletter', icon: Newspaper, label: 'View Subscribers' },
           ].map(({ to, icon: Icon, label }) => (

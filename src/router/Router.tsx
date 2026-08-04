@@ -23,7 +23,8 @@ import InterviewsAdmin from "@/admin/pages/InterviewsAdmin";
 import PlaylistsAdmin from "@/admin/pages/PlaylistsAdmin";
 import VideosAdmin from "@/admin/pages/VideosAdmin";
 import RecommendationsAdmin from "@/admin/pages/RecommendationsAdmin";
-import TriviaAdmin from "@/admin/pages/TriviaAdmin";
+import QuizzesAdmin from "@/admin/pages/QuizzesAdmin";
+import QuizQuestionsAdmin from "@/admin/pages/QuizQuestionsAdmin";
 import ContactAdmin from "@/admin/pages/ContactAdmin";
 import NewsletterAdmin from "@/admin/pages/NewsletterAdmin";
 
@@ -114,8 +115,12 @@ export const AppRouter = () => {
           element: <RecommendationsAdmin />,
         },
         {
-          path: "trivia",
-          element: <TriviaAdmin />,
+          path: "quizzes",
+          element: <QuizzesAdmin />,
+        },
+        {
+          path: "quizzes/:quizId",
+          element: <QuizQuestionsAdmin />,
         },
         {
           path: "contact",

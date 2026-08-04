@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { triviaApi, leaderboardApi, type Trivia } from '@/services/api';
+import { useParams, Link } from 'react-router-dom';
+import { quizApi, triviaApi, type Trivia, type Quiz } from '@/services/api';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, ArrowLeft, Radio } from 'lucide-react';
 
 const emptyTrivia: Omit<Trivia, '_id'> = {
   question: '',
@@ -29,35 +30,24 @@ const difficultyOptions = [
   { value: 'hard', label: 'Hard' },
 ];
 
-export default function TriviaAdmin() {
+export default function QuizQuestionsAdmin() {
+  const { quizId } = useParams<{ quizId: string }>();
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [trivia, setTrivia] = useState<Trivia[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<Trivia | null>(null);
   const [formData, setFormData] = useState(emptyTrivia);
   const [saving, setSaving] = useState(false);
-  const [deletingResults, setDeletingResults] = useState(false);
-
-  const handleDeleteAllResults = async () => {
-    if (!confirm('Are you sure you want to delete ALL quiz results? This will clear the entire leaderboard and cannot be undone.')) return;
-    setDeletingResults(true);
-    try {
-      const result = await leaderboardApi.deleteAllResults();
-      alert(`Successfully deleted ${result.deletedCount} quiz results.`);
-    } catch (error: any) {
-      console.error('Failed to delete results:', error);
-      alert(`Failed to delete quiz results: ${error.message || 'Unknown error'}`);
-    } finally {
-      setDeletingResults(false);
-    }
-  };
 
   const fetchData = async () => {
+    if (!quizId) return;
     try {
-      const data = await triviaApi.getAll({ includeExpired: 'true' });
-      setTrivia(data);
+      const { quiz: q, questions } = await quizApi.getById(quizId);
+      setQuiz(q);
+      setTrivia(questions);
     } catch (error) {
-      console.error('Failed to fetch trivia:', error);
+      console.error('Failed to fetch quiz questions:', error);
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +55,8 @@ export default function TriviaAdmin() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizId]);
 
   const handleAdd = () => {
     setEditItem(null);
@@ -102,7 +93,6 @@ export default function TriviaAdmin() {
     e.preventDefault();
     setSaving(true);
     try {
-      // Filter out empty options
       const filteredOptions = formData.options.filter((opt) => opt.trim() !== '');
       if (filteredOptions.length < 2) {
         alert('Please provide at least 2 options');
@@ -114,6 +104,7 @@ export default function TriviaAdmin() {
         ...formData,
         options: filteredOptions,
         correctAnswer: Math.min(formData.correctAnswer, filteredOptions.length - 1),
+        quiz: quizId,
       };
 
       if (editItem?._id) {
@@ -195,20 +186,30 @@ export default function TriviaAdmin() {
 
   return (
     <>
-      <div className="flex justify-end mb-4">
-        <button
-          type="button"
-          onClick={handleDeleteAllResults}
-          disabled={deletingResults}
-          className="px-4 py-2 bg-red-700 hover:bg-red-800 disabled:bg-red-700/30 text-paper font-typewriter text-xs uppercase tracking-wider transition-colors flex items-center gap-2"
+      <div className="mb-4">
+        <Link
+          to="/admin/quizzes"
+          className="inline-flex items-center gap-1.5 font-typewriter text-[10px] uppercase tracking-wider text-ink/50 hover:text-ink transition-colors no-underline"
         >
-          <Trash2 className="w-4 h-4" />
-          {deletingResults ? 'Deleting...' : 'Delete All Quiz Results'}
-        </button>
+          <ArrowLeft className="w-3.5 h-3.5" />
+          All Quizzes
+        </Link>
       </div>
 
+      {quiz && (
+        <div className="flex items-center gap-3 mb-6">
+          <h1 className="font-display text-2xl text-ink">{quiz.title}</h1>
+          {quiz.isLive && (
+            <span className="inline-flex items-center gap-1 font-typewriter text-[10px] uppercase tracking-wider px-2 py-1 bg-cutout-red text-paper">
+              <Radio className="w-3 h-3" />
+              Live
+            </span>
+          )}
+        </div>
+      )}
+
       <DataTable
-        title="Trivia Questions"
+        title="Questions"
         data={trivia}
         columns={columns}
         onAdd={handleAdd}
