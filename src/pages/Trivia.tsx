@@ -160,118 +160,86 @@ const Trivia = () => {
     fetchQuestions();
   }, []);
 
-  const getSnarkyComment = (percentage: number) => {
+  const getResultComment = (percentage: number) => {
     const pickRandom = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
     if (percentage === 100) {
       return pickRandom([
-        "No cap, you absolutely ATE and left NO crumbs. It's giving musical genius with a PhD.",
-        "Okay but this is lowkey unhinged?? You really said 'watch me be perfect' and DID THAT. Main character for real.",
-        "It's giving 'I was born in a recording studio' energy. Highkey obsessed with this serve.",
-        "Bestie you really thought you'd flex on us like this? And you DID?? Absolutely unhinged behavior, we stan.",
-        "You're literally the blueprint. The moment. The icon. No notes, just pure perfection fr fr.",
-        "Highkey terrifying how you ate every single question. Are you even real or just a music theory textbook with feelings?",
-        "It's giving 'I have Spotify Premium and a music degree' vibes. Immaculate, no notes, chef's kiss.",
-        "Lowkey scared of you now. You just violated this quiz in broad daylight. Absolutely feral excellence.",
-        "No cap, you just gaslit the entire quiz into being easy. Delusional confidence that actually delivered.",
-        "This is main character energy but make it TERRIFYING. You really understood every assignment and then some.",
+        "Perfect score! You know your music inside and out — every single answer on point. Take a bow. 🎶",
+        "Flawless run! Not a single note out of place. You're the real deal.",
+        "Absolute perfection. Your ears deserve a standing ovation. 👏",
+        "100%! You didn't just pass — you aced every beat. Music genius confirmed.",
+        "Spotless. Every answer nailed. This is what mastery sounds like. 🏆",
+        "You swept the whole thing! Encyclopedic taste, and it shows. Bravo.",
       ]);
     }
     if (percentage >= 87.5) {
       return pickRandom([
-        "Lowkey obsessed with how close you got. Highkey mad you fumbled at the finish line though bestie.",
-        "It's giving 'almost perfect but still human' vibes. We see the vision, just squint a lil.",
-        "You're so close to greatness it's actually unhinged. Like why stop NOW?? Main character who tripped at the end.",
-        "No cap, you cooked but left the kitchen slightly messy. Still ate though, we're not gonna lie.",
-        "This is giving 'I could've been perfect but chose chaos' energy. Honestly? Iconic behavior.",
-        "Bestie you really said 'perfection is mid' and almost proved it wrong. So close it HURTS.",
-        "Highkey impressed, lowkey devastated you missed ANY. The duality is unhinged.",
-        "It's giving valedictorian energy with one B+ that haunts you forever. We get it.",
-        "You're like 98% that witch but 2% just... forgot the spell? Still magical though bestie.",
-        "No cap, this score is absolutely bussin' with just a HINT of delusion. Almost there legend.",
+        "So close to perfect! Just a note or two off — seriously impressive stuff. 🎧",
+        "Outstanding score! You clearly know your music. A tiny stumble, but wow.",
+        "Almost flawless! You've got a fantastic ear — just a couple slipped by.",
+        "Brilliant run! One or two got away, but this is top-tier knowledge.",
+        "You're at the top of the class! A hair from perfect. Beautifully done.",
+        "Nearly aced it! Your music knowledge is genuinely excellent. 🌟",
       ]);
     }
     if (percentage >= 75) {
       return pickRandom([
-        "Solid but not spectacular, bestie. It's giving 'I know enough to be dangerous but not deadly.'",
-        "Lowkey slayed, highkey could've tried harder. But you're comfortable with mediocrity and that's... a choice.",
-        "You understood most of the assignment but definitely skipped the reading. B+ energy for real.",
-        "It's giving 'I listen to music but don't STUDY it' vibes. Casual fan behavior, we see you.",
-        "This is giving 'good enough' mentality. Not the serve, not the flop, just... there. Mid-tier icon.",
-        "Bestie you ate most of it but left some CHUNKS on the plate. A little concerning ngl.",
-        "Lowkey proud, highkey know you didn't try your hardest. Growth mindset or nah?",
-        "Main character who skipped episodes 3, 7, and 11 but somehow followed the plot. Respect.",
-        "It's giving 'I have a playlist but it's 30 songs on repeat.' Limited but confident.",
-        "No cap, this is respectable but forgettable. You're in the group chat but not the main thread.",
+        "Great job! You clearly know your stuff — a really solid score. 🎵",
+        "Strong showing! You've got a good ear and it paid off. Nicely done.",
+        "Well played! You know your music well. A few tricky ones, but a great result.",
+        "Solid score! You're a real music fan and it shows. Keep it up.",
+        "Nice work! You handled most of that with ease. Impressive listening.",
+        "A strong result — clearly you've been paying attention to the music. 👏",
       ]);
     }
     if (percentage >= 62.5) {
       return pickRandom([
-        "It's giving... you TRIED and that's the kindest thing we can say rn. Participation trophy loaded.",
-        "You thought you ate but bestie you barely TASTED. Main character delusion without the plot armor.",
-        "Highkey expected better but we're being nice because you look fragile. This is mid with a capital MID.",
-        "Not the serve you thought it was, but at least you showed up? The bar is on the FLOOR.",
-        "Bestie this is giving 'I hit shuffle and pray' energy. Strategic guessing is NOT a personality trait.",
-        "Lowkey embarrassing but we're manifesting growth for you. Thoughts and prayers fr.",
-        "It's giving 'I recognize the chorus but that's IT' vibes. Surface level understanding only.",
-        "You're the side character who THINKS they're the lead. The delusion is almost impressive bestie.",
-        "No cap, you passed by a THREAD. It's giving 'phew I barely survived that' panic energy.",
-        "Highkey need you to lock in and study. This is your wake-up call, are you AWAKE??",
+        "Good effort! You know more than most — a respectable score. 🎧",
+        "Nice going! You got the majority right. A little more listening and you'll be unstoppable.",
+        "Not bad at all! You've got a decent handle on this. Keep exploring.",
+        "Decent score! You clearly enjoy music — a few more spins and you'll level up.",
+        "Well done! You held your own. There's more to discover, and that's the fun part.",
+        "Solid try! You're on the right track — keep the tunes coming. 🎶",
       ]);
     }
     if (percentage >= 50) {
       return pickRandom([
-        "Bestie... this is the DEFINITION of mid. Like textbook mediocrity, frame it and put it in a museum.",
-        "You said 'I'll guess half' and actually DID. The audacity is unhinged but not in a good way.",
-        "Lowkey tragic, highkey expected from someone with your energy. It's giving 'music is just noise.'",
-        "Main character?? More like blurry background extra who doesn't even get a name. Humble yourself.",
-        "It's giving 'I know vibes but ZERO facts' energy. Vibes don't count as knowledge, sorry.",
-        "You're literally standing at the crossroads of knowing and being clueless. Pick a lane bestie.",
-        "No cap, this is bare minimum effort. We're not mad, just disappointed. Actually we're a little mad.",
-        "Highkey mediocre, lowkey sad to witness. Most people live here and that's the problem fr.",
-        "It's giving 'I've HEARD of music' but never listened properly. Not the flex, please sit down.",
-        "You really said 'coin flip odds' and lived that truth. Chaotic but make it EMBARRASSING.",
+        "Halfway there! A fair start — plenty of great music left to discover. 🎵",
+        "Good attempt! You got a bunch right. Keep listening and you'll climb fast.",
+        "Not bad! You're building your music knowledge — every quiz makes you sharper.",
+        "You held steady at the halfway mark. A whole world of music is waiting for you.",
+        "Nice try! A solid middle-of-the-pack score. Run it back and beat it. 🎧",
+        "You're getting there! Keep the playlists rolling and watch your score rise.",
       ]);
     }
     if (percentage >= 37.5) {
       return pickRandom([
-        "Oh no bestie... this is HIGHKEY embarrassing. It's giving 'what is music?' energy. Please.",
-        "You flopped HARD and we're gonna dwell actually. Time to delete your Spotify and start over.",
-        "It's giving 'I only know songs from TikTok ads' vibes. Unhinged ignorance fr fr.",
-        "You really said 'music is just background noise' and PROVED it. The worst kind of correct.",
-        "This is giving 'I heard a song once in 2019' energy. Bestie WHERE have you BEEN??",
-        "Your music knowledge ghosted you. Actually it was never there to begin with, let's be honest.",
-        "Lowkey terrified about your aux privileges. They're REVOKED, effective immediately bestie.",
-        "No cap, this is giving 'I thought Beethoven was JUST a dog movie.' Help is available.",
-        "It's giving NPC who stands in the corner with NO dialogue. Zero awareness, zero braincells.",
-        "You're the person asking 'who's this?' every 10 seconds. We KNOW you are, it's obvious.",
+        "Nice try! Music's a big world — this is a great excuse to explore more. 🎶",
+        "Good on you for playing! A few more listening sessions and you'll surprise yourself.",
+        "You gave it a shot! Every song you hear from here makes you better. Keep going.",
+        "Room to grow, and that's exciting! Discover a few new artists and come back. 🎧",
+        "Not your best round, but now you know what to dig into next. Have fun with it.",
+        "Keep at it! The best part of music is there's always more to find.",
       ]);
     }
     if (percentage >= 25) {
       return pickRandom([
-        "OOF. It's giving 'I've never seen headphones in real life.' Lowkey devastating to witness.",
-        "Bestie this is unhinged in the WORST way possible. Did you even TRY or just click random??",
-        "No cap, this is a full-blown CRISIS. Your music knowledge needs life support STAT.",
-        "Highkey concerning fr. It's giving 'raised by silent wolves in a basement' vibes. GET HELP.",
-        "This is giving 'all songs sound identical to me' energy. That's... not normal bestie.",
-        "You're the reason artists consider quitting. This score is VIOLENCE against music itself.",
-        "Lowkey wanna make you a playlist. Highkey wanna send you to PRISON for this crime.",
-        "It's giving 'I wear earbuds but never press play' behavior. WHAT are you even DOING??",
-        "No cap, this is the villain origin story for every music teacher. You're the trauma.",
-        "Bestie you didn't miss the mark, you're in a different DIMENSION. How did you get here?",
+        "Hey, everyone starts somewhere! The fun's in the discovery — keep listening. 🎧",
+        "Early days! Put on some new tunes and give it another go. You'll improve fast.",
+        "No worries — music's a journey. Explore a little and run it back. 🎵",
+        "That's alright! Every music lover was new once. Keep those ears open.",
+        "Plenty of room to grow, and honestly, that's the fun part. Come back soon!",
+        "You showed up and played — that's step one. Now go find some new favorites.",
       ]);
     }
     return pickRandom([
-      "HELP?? This is genuinely UNHINGED. Did you literally close your eyes, spin around, and tap randomly??",
-      "Bestie... no cap, this might be the worst thing humanity has produced. It's giving NOTHING and I mean it.",
-      "Lowkey calling the authorities rn. Highkey worried about your SAFETY. This is a musical CRIME SCENE.",
-      "It's giving 'I thought music was invented yesterday' vibes. Touch grass, touch an album, touch SOMETHING.",
-      "Main character energy?? You don't even get ELEVATOR music in your scenes. You're in silent film territory.",
-      "This is giving 'I've never experienced joy from sound' behavior. Seek therapy AND a Spotify account IMMEDIATELY.",
-      "No cap, you broke the quiz in the WORST way. Like illegally bad. The FBI should be involved.",
-      "Bestie this score is a FELONY in 49 states. Highkey criminal behavior that cannot be forgiven.",
-      "It's giving 'I thought Beyoncé was a CITY' energy. Please stop existing near music, PLEASE.",
-      "You really asked 'what IS music?' and weren't joking. Unhinged doesn't cover this level of chaos.",
+      "Hey, everyone starts somewhere! The fun's in the discovery — keep listening and come back stronger. 🎧",
+      "Tough round, but no biggie! There's a whole world of music to fall in love with. 🎵",
+      "Don't sweat it — this is just the start. Queue up some tunes and try again.",
+      "It happens! The good news? So much great music to discover from here. 🎧",
+      "Everyone's got a first quiz. Explore a few new artists and give it another spin!",
+      "No shame in a rough start — even the pros were beginners once. Keep going. 🌟",
     ]);
   };
 
@@ -455,13 +423,13 @@ const Trivia = () => {
                 </div>
               </div>
 
-              {/* Snarky comment */}
+              {/* Result comment */}
               <div
                 className="bg-paper border-2 border-dashed border-ink/20 p-6 mb-8"
                 style={{ transform: "rotate(0.3deg)" }}
               >
                 <p className="font-quote italic text-lg text-ink/70 text-center leading-relaxed">
-                  &ldquo;{getSnarkyComment(percentage)}&rdquo;
+                  &ldquo;{getResultComment(percentage)}&rdquo;
                 </p>
               </div>
 
