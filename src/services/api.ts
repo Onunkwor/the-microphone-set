@@ -181,6 +181,15 @@ export interface LiveQuizResponse {
   questions: Trivia[];
 }
 
+export interface QuizPlayerResult {
+  _id: string;
+  userName: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  completedAt: string;
+}
+
 // Leaderboard interfaces
 export interface QuizAnswer {
   questionId: string;
@@ -248,6 +257,7 @@ export const quizApi = {
   // Admin
   getAll: () => fetchApi<Quiz[]>('/quiz'),
   getById: (id: string) => fetchApi<LiveQuizResponse>(`/quiz/${id}`),
+  getResults: (id: string) => fetchApi<QuizPlayerResult[]>(`/quiz/${id}/results`),
   create: (data: { title: string; description?: string }) =>
     fetchApi<Quiz>('/quiz', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: string, data: { title: string; description?: string }) =>

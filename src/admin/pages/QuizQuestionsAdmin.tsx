@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { quizApi, triviaApi, type Trivia, type Quiz } from '@/services/api';
+import { quizApi, triviaApi, type Trivia, type Quiz, type QuizPlayerResult } from '@/services/api';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
-import { Plus, Trash2, ArrowLeft, Radio } from 'lucide-react';
+import { Plus, Trash2, ArrowLeft, Radio, ListChecks, Trophy } from 'lucide-react';
 
 const emptyTrivia: Omit<Trivia, '_id'> = {
   question: '',
@@ -39,17 +39,25 @@ export default function QuizQuestionsAdmin() {
   const [editItem, setEditItem] = useState<Trivia | null>(null);
   const [formData, setFormData] = useState(emptyTrivia);
   const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState<'questions' | 'players'>('questions');
+  const [results, setResults] = useState<QuizPlayerResult[]>([]);
+  const [resultsLoading, setResultsLoading] = useState(true);
 
   const fetchData = async () => {
     if (!quizId) return;
     try {
-      const { quiz: q, questions } = await quizApi.getById(quizId);
+      const [{ quiz: q, questions }, players] = await Promise.all([
+        quizApi.getById(quizId),
+        quizApi.getResults(quizId).catch(() => [] as QuizPlayerResult[]),
+      ]);
       setQuiz(q);
       setTrivia(questions);
+      setResults(players);
     } catch (error) {
       console.error('Failed to fetch quiz questions:', error);
     } finally {
       setIsLoading(false);
+      setResultsLoading(false);
     }
   };
 
@@ -208,15 +216,45 @@ export default function QuizQuestionsAdmin() {
         </div>
       )}
 
-      <DataTable
-        title="Questions"
-        data={trivia}
-        columns={columns}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        isLoading={isLoading}
-      />
+      {/* Tabs */}
+      <div className="flex items-center gap-1 mb-6 border-b-2 border-ink/10">
+        <button
+          onClick={() => setTab('questions')}
+          className={`inline-flex items-center gap-2 px-4 py-2.5 font-typewriter text-xs uppercase tracking-wider transition-colors -mb-0.5 border-b-2 ${
+            tab === 'questions'
+              ? 'border-cutout-red text-ink'
+              : 'border-transparent text-ink/40 hover:text-ink'
+          }`}
+        >
+          <ListChecks className="w-4 h-4" />
+          Questions ({trivia.length})
+        </button>
+        <button
+          onClick={() => setTab('players')}
+          className={`inline-flex items-center gap-2 px-4 py-2.5 font-typewriter text-xs uppercase tracking-wider transition-colors -mb-0.5 border-b-2 ${
+            tab === 'players'
+              ? 'border-cutout-red text-ink'
+              : 'border-transparent text-ink/40 hover:text-ink'
+          }`}
+        >
+          <Trophy className="w-4 h-4" />
+          Players ({results.length})
+        </button>
+      </div>
+
+      {tab === 'questions' ? (
+        <DataTable
+          title="Questions"
+          data={trivia}
+          columns={columns}
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          isLoading={isLoading}
+        />
+      ) : (
+        <PlayersTable results={results} isLoading={resultsLoading} />
+      )}
 
       <Modal
         isOpen={modalOpen}
@@ -335,5 +373,81 @@ export default function QuizQuestionsAdmin() {
         </form>
       </Modal>
     </>
+  );
+}
+
+function PlayersTable({
+  results,
+  isLoading,
+}: {
+  results: QuizPlayerResult[];
+  isLoading: boolean;
+}) {
+  const formatDate = (value: string) =>
+    new Date(value).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-cutout-red"></div>
+      </div>
+    );
+  }
+
+  if (results.length === 0) {
+    return (
+      <div className="bg-paper-white border-2 border-ink/10 p-12 text-center">
+        <p className="font-body text-sm text-ink/50">
+          No one has played this quiz yet. Scores will appear here once players finish it.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-paper-white border-2 border-ink/10 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-ink/5 border-b-2 border-ink/10">
+            <tr>
+              <th className="px-4 py-3 text-left font-typewriter text-[10px] uppercase tracking-wider text-ink/60 w-16">#</th>
+              <th className="px-4 py-3 text-left font-typewriter text-[10px] uppercase tracking-wider text-ink/60">Player</th>
+              <th className="px-4 py-3 text-left font-typewriter text-[10px] uppercase tracking-wider text-ink/60">Score</th>
+              <th className="px-4 py-3 text-left font-typewriter text-[10px] uppercase tracking-wider text-ink/60">Percentage</th>
+              <th className="px-4 py-3 text-left font-typewriter text-[10px] uppercase tracking-wider text-ink/60">Played</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-ink/10">
+            {results.map((r, i) => (
+              <tr key={r._id} className="hover:bg-cutout-yellow/10 transition-colors">
+                <td className="px-4 py-3 font-typewriter text-sm text-ink/50">{i + 1}</td>
+                <td className="px-4 py-3 font-body text-sm text-ink font-medium">{r.userName}</td>
+                <td className="px-4 py-3 font-body text-sm text-ink/80">
+                  {r.score}/{r.totalQuestions}
+                </td>
+                <td className="px-4 py-3">
+                  <span
+                    className={`inline-block font-typewriter text-[11px] px-2 py-0.5 ${
+                      r.percentage >= 75
+                        ? 'bg-green-100 text-green-800 border border-green-300'
+                        : r.percentage >= 50
+                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                        : 'bg-red-100 text-red-800 border border-red-300'
+                    }`}
+                  >
+                    {r.percentage}%
+                  </span>
+                </td>
+                <td className="px-4 py-3 font-body text-sm text-ink/50">{formatDate(r.completedAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
