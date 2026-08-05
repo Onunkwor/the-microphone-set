@@ -11,6 +11,7 @@ import {
   Radio,
   CircleDot,
   Loader2,
+  Trophy,
 } from 'lucide-react';
 
 const emptyQuiz = { title: '', description: '' };
@@ -26,19 +27,39 @@ export default function QuizzesAdmin() {
   const [deletingResults, setDeletingResults] = useState(false);
   const [legacyCount, setLegacyCount] = useState(0);
   const [importing, setImporting] = useState(false);
+  const [orphanResults, setOrphanResults] = useState(0);
+  const [backfilling, setBackfilling] = useState(false);
 
   const fetchData = async () => {
     try {
-      const [data, legacy] = await Promise.all([
+      const [data, legacy, orphans] = await Promise.all([
         quizApi.getAll(),
         quizApi.getLegacyCount().catch(() => ({ count: 0 })),
+        quizApi.getOrphanResultsCount().catch(() => ({ count: 0 })),
       ]);
       setQuizzes(data);
       setLegacyCount(legacy.count);
+      setOrphanResults(orphans.count);
     } catch (error) {
       console.error('Failed to fetch quizzes:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleBackfillResults = async () => {
+    if (!confirm(`Attribute ${orphanResults} past score record(s) to the quiz they were played on?`)) return;
+    setBackfilling(true);
+    try {
+      const { updated } = await quizApi.backfillResults();
+      alert(`Linked ${updated} score record(s) to their quiz. Open a quiz's "Players" tab to see them.`);
+      setIsLoading(true);
+      await fetchData();
+    } catch (error: any) {
+      console.error('Failed to attribute scores:', error);
+      alert(`Failed to attribute scores: ${error.message || 'Unknown error'}`);
+    } finally {
+      setBackfilling(false);
     }
   };
 
@@ -232,6 +253,27 @@ export default function QuizzesAdmin() {
           >
             {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             {importing ? 'Importing...' : 'Import into a quiz'}
+          </button>
+        </div>
+      )}
+
+      {orphanResults > 0 && (
+        <div className="mb-6 bg-cutout-yellow/20 border-2 border-cutout-yellow p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="font-typewriter text-xs uppercase tracking-wider text-ink">
+              {orphanResults} past score{orphanResults === 1 ? '' : 's'} not linked to a quiz
+            </p>
+            <p className="font-body text-sm text-ink/60 mt-1">
+              These were played before scores were tracked per quiz. Attribute them so they show under the right quiz's Players tab.
+            </p>
+          </div>
+          <button
+            onClick={handleBackfillResults}
+            disabled={backfilling}
+            className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 bg-ink text-paper font-typewriter text-xs uppercase tracking-wider hover:bg-ink/80 disabled:bg-ink/30 transition-colors"
+          >
+            {backfilling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trophy className="w-4 h-4" />}
+            {backfilling ? 'Attributing...' : 'Attribute past scores'}
           </button>
         </div>
       )}

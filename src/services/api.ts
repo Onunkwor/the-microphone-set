@@ -273,6 +273,10 @@ export const quizApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  // Attribute past score records to their quiz (one-off cleanup)
+  getOrphanResultsCount: () => fetchApi<{ count: number }>('/quiz/orphan-results/count'),
+  backfillResults: () =>
+    fetchApi<{ updated: number; total: number }>('/quiz/backfill-results', { method: 'POST' }),
 };
 
 // Contact API
